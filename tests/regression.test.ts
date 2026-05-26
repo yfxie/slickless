@@ -208,6 +208,38 @@ describe("regression: edge event fires consistently from arrow clicks at the bou
   });
 });
 
+describe("regression: fade + infinite wraps the index past the last slide", () => {
+  it("cycles back to 0 instead of clamping at the last index", () => {
+    const root = track(makeRoot(4));
+    const s = new Slickless(root, {
+      fade: true,
+      infinite: true,
+      speed: 0,
+    });
+    s.goTo(3);
+    expect(s.getCurrentSlide()).toBe(3);
+    s.next();
+    expect(s.getCurrentSlide()).toBe(0);
+    s.prev();
+    expect(s.getCurrentSlide()).toBe(3);
+  });
+
+  it("still clamps when fade + infinite:false", () => {
+    const root = track(makeRoot(4));
+    const seen: string[] = [];
+    const s = new Slickless(root, {
+      fade: true,
+      infinite: false,
+      speed: 0,
+    });
+    s.on<{ direction: string }>("edge", (d) => seen.push(d.direction));
+    s.goTo(3);
+    s.next();
+    expect(s.getCurrentSlide()).toBe(3); // clamped
+    expect(seen).toContain("right");
+  });
+});
+
 describe("regression: rapid arrow clicks during animation", () => {
   it("drops extra clicks during an in-flight animation (only the first lands)", async () => {
     const root = track(makeRoot(6));

@@ -501,11 +501,13 @@ export class Slickless {
     let target = index;
     const wrapEnabled = this.options.infinite && !this.options.fade;
 
-    if (!wrapEnabled) {
-      // Clamp to any valid slide index. The visual translation is clamped
-      // separately in indexToOffset so the track doesn't reveal empty space.
-      // This separation lets callers focus a specific slide (asNavFor /
-      // focusOnSelect) even when every slide already fits in the viewport.
+    if (!this.options.infinite) {
+      // Finite carousel — clamp the target to a valid slide index and emit
+      // `edge` when callers walk past either end. The visual translation is
+      // clamped separately in indexToOffset so the track doesn't reveal
+      // empty space. This separation lets callers focus a specific slide
+      // (asNavFor / focusOnSelect) even when every slide already fits in
+      // the viewport.
       const maxIndex = Math.max(0, this.slideCount - 1);
       if (target < 0) {
         this.emit("edge", { direction: this.options.rtl ? "right" : "left" } satisfies EdgeDetail);
@@ -515,6 +517,10 @@ export class Slickless {
         this.emit("edge", { direction: this.options.rtl ? "left" : "right" } satisfies EdgeDetail);
         target = maxIndex;
       }
+    } else if (this.options.fade) {
+      // Fade + infinite has no clones to animate through, but the index
+      // still needs to wrap so autoplay / next / prev cycle continuously.
+      target = mod(target, this.slideCount);
     }
 
     const previous = this.currentIndex;
