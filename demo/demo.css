@@ -1,9 +1,10 @@
 /* ===========================================================================
  * slickless demo — entry stylesheet
  * Each module lives in ./styles/ and is loaded in cascade order below.
- * The library's own styles are pulled in by `import "slickless"` in demo.ts
- * (via `src/index.ts`), so we don't @import them again here.
  * ======================================================================== */
+
+/* Library styles (carousel viewport, track, slide, dots, arrows, tokens). */
+@import "../src/styles.css";
 
 /* Page chrome */
 @import "./styles/base.css";
