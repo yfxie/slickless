@@ -1,0 +1,56 @@
+/* Example: Adaptive height. */
+
+#adaptive-carousel.adaptive-stage {
+  padding: 0 60px;
+}
+
+@media (max-width: 640px) {
+  #adaptive-carousel.adaptive-stage {
+    padding: 0 48px;
+  }
+}
+
+.adaptive-stage .slickless__viewport {
+  transition: height 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 14px;
+  border: 1.5px solid var(--c-ink);
+  background: var(--c-paper);
+}
+
+.adaptive-stage .slickless__arrow--prev {
+  left: 4px;
+}
+.adaptive-stage .slickless__arrow--next {
+  right: 4px;
+}
+
+.adapt {
+  padding: 28px 32px;
+  display: block;
+}
+
+.adapt h4 {
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+
+.adapt p {
+  margin: 0 0 10px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-ink);
+}
+
+.adapt p:last-child {
+  margin-bottom: 0;
+}
+
+.adapt code {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--c-cream);
+  padding: 2px 6px;
+  border-radius: 4px;
+}

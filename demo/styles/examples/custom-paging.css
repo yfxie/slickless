@@ -1,0 +1,50 @@
+/* Example: Custom paging (fraction style). */
+
+.phrase-stage .slickless__viewport {
+  border-radius: 14px;
+  background: var(--c-ink);
+  color: var(--c-paper);
+}
+
+.phrase {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  font-family: var(--serif);
+  font-size: clamp(20px, 3.6vw, 40px);
+  letter-spacing: -0.02em;
+  padding: 24px 32px;
+  text-align: center;
+  max-width: none;
+}
+
+@media (max-width: 640px) {
+  .phrase {
+    height: 180px;
+    padding: 16px 20px;
+  }
+}
+
+.phrase-stage .slickless__dots {
+  gap: 20px;
+}
+
+.frac {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--c-muted);
+  background: transparent !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(10, 10, 10, 0.15) !important;
+}
+
+.phrase-stage .slickless__dot.frac.slickless__dot--active {
+  color: var(--c-paper);
+  background: var(--c-ink) !important;
+  border-color: var(--c-ink) !important;
+}

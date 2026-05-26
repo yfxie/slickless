@@ -1,0 +1,90 @@
+/* Example: Variable width (Pantone-style swatches). */
+
+#varwidth-carousel.varwidth-row {
+  padding: 0 60px;
+}
+
+@media (max-width: 640px) {
+  #varwidth-carousel.varwidth-row {
+    padding: 0 48px;
+  }
+}
+
+.varwidth-row .slickless__viewport {
+  padding: 6px 0;
+}
+
+.varwidth-row .slickless__slide {
+  padding: 0 7px;
+}
+
+.varwidth-row .slickless__arrow--prev { left: 4px; }
+.varwidth-row .slickless__arrow--next { right: 4px; }
+
+/* Swatch card — Pantone-style with a colour block, name and optional code. */
+.swatch {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 14px;
+  height: 72px;
+  padding: 0 22px 0 14px;
+  background: var(--c-paper);
+  border: 1px solid rgba(10, 10, 10, 0.12);
+  border-radius: 12px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(10, 10, 10, 0.04);
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 10, 10, 0.08);
+  border-color: rgba(10, 10, 10, 0.22);
+}
+
+.swatch__chip {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--swatch-color);
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(10, 10, 10, 0.12);
+}
+
+.swatch__name {
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--c-ink);
+}
+
+.swatch__code {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  padding-left: 4px;
+  border-left: 1px solid rgba(10, 10, 10, 0.12);
+  margin-left: 2px;
+}
+
+@media (max-width: 640px) {
+  .swatch {
+    height: 60px;
+    gap: 12px;
+    padding: 0 16px 0 12px;
+  }
+  .swatch__chip {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+  }
+  .swatch__name {
+    font-size: 15px;
+  }
+  .swatch__code {
+    display: none;
+  }
+}

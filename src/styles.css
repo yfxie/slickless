@@ -1,0 +1,297 @@
+/* ----------------------------------------------------------------------------
+ * slickless — base styles
+ * Modern, minimal defaults. Override anywhere with your own CSS.
+ * -------------------------------------------------------------------------- */
+
+.slickless {
+  --slickless-arrow-size: 44px;
+  --slickless-arrow-color: #0f172a;
+  --slickless-arrow-bg: #ffffff;
+  --slickless-arrow-bg-hover: #f8fafc;
+  --slickless-arrow-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.16),
+    0 2px 4px -1px rgba(15, 23, 42, 0.08);
+  --slickless-arrow-disabled-opacity: 0.3;
+  --slickless-dot-size: 8px;
+  --slickless-dot-color: rgba(15, 23, 42, 0.25);
+  --slickless-dot-color-active: #0f172a;
+  --slickless-dot-gap: 10px;
+  --slickless-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.45);
+
+  position: relative;
+  box-sizing: border-box;
+  outline: none;
+  /* Prevent intrinsic min-content from pushing flex/grid parents to expand. */
+  min-width: 0;
+}
+
+.slickless *,
+.slickless *::before,
+.slickless *::after {
+  box-sizing: border-box;
+}
+
+/* Opt-in FOUC reduction.
+ *
+ * The library can only set up the carousel after JavaScript runs. If your
+ * root element starts with several stacked children, the browser will paint
+ * the tall pre-init stack and then jolt to the carousel layout when JS
+ * initialises. To suppress that jolt, add `class="slickless"` to your root
+ * in the HTML — the rule below then hides every child except the first
+ * until the library finishes building (which adds `slickless--initialized`).
+ *
+ * The container's height then matches your first slide before init and the
+ * full carousel afterwards, eliminating most of the layout shift. For an
+ * exact match, pair this with an explicit height on the root or the
+ * viewport. */
+.slickless:not(.slickless--initialized) > *:not(:first-child) {
+  display: none;
+}
+
+.slickless:focus-visible {
+  box-shadow: var(--slickless-focus-ring);
+  border-radius: 4px;
+}
+
+/* Viewport ---------------------------------------------------------------- */
+
+.slickless__viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+  touch-action: pan-y;
+}
+
+.slickless--vertical .slickless__viewport {
+  touch-action: pan-x;
+  height: 100%;
+  min-height: 0;
+}
+
+.slickless--fade .slickless__viewport {
+  min-height: 1px;
+}
+
+/* Track ------------------------------------------------------------------- */
+
+.slickless__track {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  will-change: transform;
+}
+
+.slickless--vertical .slickless__track {
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* In adaptive-height mode the viewport itself is animated to the focused
+ * slide's height. Without this rule the flex track would stretch every slide
+ * to the tallest, making slide heights uniform and the option a no-op. */
+.slickless--adaptive-height .slickless__track {
+  align-items: flex-start;
+}
+
+.slickless--fade .slickless__track {
+  display: block;
+  position: relative;
+  height: 100%;
+}
+
+.slickless--dragging .slickless__track {
+  cursor: grabbing;
+}
+
+/* Slides ------------------------------------------------------------------ */
+
+.slickless__slide {
+  flex: 0 0 auto;
+  position: relative;
+  outline: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.slickless__slide > * {
+  width: 100%;
+  height: 100%;
+}
+
+.slickless--fade .slickless__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.slickless__slide:focus-visible {
+  box-shadow: var(--slickless-focus-ring);
+  border-radius: 4px;
+}
+
+/* Arrows ------------------------------------------------------------------ */
+
+.slickless__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--slickless-arrow-size);
+  height: var(--slickless-arrow-size);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--slickless-arrow-bg);
+  color: var(--slickless-arrow-color);
+  box-shadow: var(--slickless-arrow-shadow);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color 160ms ease, transform 160ms ease, opacity 160ms ease;
+}
+
+.slickless__arrow:hover {
+  background: var(--slickless-arrow-bg-hover);
+}
+
+.slickless__arrow:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+.slickless__arrow:focus-visible {
+  box-shadow: var(--slickless-arrow-shadow), var(--slickless-focus-ring);
+}
+
+.slickless__arrow--prev {
+  left: 12px;
+}
+
+.slickless__arrow--next {
+  right: 12px;
+}
+
+.slickless--rtl .slickless__arrow--prev {
+  left: auto;
+  right: 12px;
+}
+
+.slickless--rtl .slickless__arrow--next {
+  right: auto;
+  left: 12px;
+}
+
+.slickless--vertical .slickless__arrow {
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+}
+
+.slickless--vertical .slickless__arrow--prev {
+  top: 12px;
+}
+
+.slickless--vertical .slickless__arrow--next {
+  right: auto;
+  bottom: 12px;
+}
+
+.slickless__arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+.slickless__arrow--disabled {
+  opacity: var(--slickless-arrow-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.slickless__arrow--disabled:hover {
+  background: var(--slickless-arrow-bg);
+}
+
+/* Dots -------------------------------------------------------------------- */
+
+.slickless__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--slickless-dot-gap);
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.slickless__dots li {
+  display: inline-flex;
+}
+
+.slickless__dot {
+  cursor: pointer;
+}
+
+.slickless__dot:focus-visible {
+  box-shadow: var(--slickless-focus-ring);
+}
+
+.slickless__dot--bullet {
+  width: var(--slickless-dot-size);
+  height: var(--slickless-dot-size);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--slickless-dot-color);
+  transition: background-color 200ms ease, width 200ms ease;
+  font-size: 0;
+  color: transparent;
+}
+
+.slickless__dot--bullet:hover {
+  background: var(--slickless-dot-color-active);
+  opacity: 0.7;
+}
+
+.slickless__dot--bullet.slickless__dot--active {
+  background: var(--slickless-dot-color-active);
+  width: calc(var(--slickless-dot-size) * 3);
+  border-radius: 999px;
+}
+
+/* Center mode emphasis ---------------------------------------------------- */
+
+.slickless--center .slickless__slide {
+  /* The library writes --slickless-transition-duration in JS to match the
+   * configured `speed` option, so the scale animates in lockstep with the
+   * track's transform. */
+  transition: opacity var(--slickless-transition-duration, 400ms) ease,
+    transform var(--slickless-transition-duration, 400ms) ease;
+  opacity: 0.55;
+  transform: scale(0.92);
+}
+
+.slickless--center .slickless__slide--center {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Set by the library across an infinite-wrap snap. We're moving the center
+ * class from the clone we just animated into onto its corresponding real
+ * slide; without this, the real slide would re-animate scale/opacity from
+ * the inactive state. */
+.slickless--snap .slickless__slide,
+.slickless--snap .slickless__track {
+  transition: none !important;
+}
+
+/* Reduced motion ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .slickless__track,
+  .slickless__slide,
+  .slickless__arrow,
+  .slickless__dot {
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,277 @@
+/* Shared interactive components: toggle switch and the API table wrapper. */
+
+/* Toggle switch ---------------------------------------------------------- */
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle__label {
+  font-weight: 600;
+}
+
+.toggle__switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.toggle__switch input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.toggle__track {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.18);
+  border-radius: 999px;
+  transition: background 200ms ease;
+}
+
+.toggle__track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--c-paper);
+  box-shadow: 0 1px 3px rgba(10, 10, 10, 0.2);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toggle__switch input:checked ~ .toggle__track {
+  background: var(--c-amber);
+}
+
+.toggle__switch input:checked ~ .toggle__track::after {
+  transform: translateX(18px);
+}
+
+.toggle__switch input:focus-visible ~ .toggle__track {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.45);
+}
+
+.toggle__state {
+  min-width: 24px;
+  font-weight: 500;
+  color: var(--c-muted);
+  letter-spacing: 0.08em;
+}
+
+.toggle__switch input:checked ~ * .toggle__state,
+.toggle:has(input:checked) .toggle__state {
+  color: var(--c-ink);
+}
+
+/* Range slider ----------------------------------------------------------- */
+
+.range {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: var(--c-cream);
+  border: 1px solid rgba(10, 10, 10, 0.12);
+  border-radius: 999px;
+  user-select: none;
+}
+
+.range__label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink);
+  font-weight: 600;
+}
+
+.range__value {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--c-amber);
+  min-width: 38px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.range input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 180px;
+  height: 4px;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Track */
+.range input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--c-ink) 0%,
+    var(--c-ink) var(--range-fill, 50%),
+    rgba(10, 10, 10, 0.15) var(--range-fill, 50%),
+    rgba(10, 10, 10, 0.15) 100%
+  );
+}
+
+.range input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.15);
+}
+
+.range input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--c-ink);
+}
+
+/* Thumb */
+.range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--c-amber);
+  border: 2px solid var(--c-paper);
+  box-shadow: 0 1px 4px rgba(10, 10, 10, 0.2);
+  cursor: grab;
+  transition: transform 160ms ease;
+}
+
+.range input[type="range"]:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+.range input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--c-amber);
+  border: 2px solid var(--c-paper);
+  box-shadow: 0 1px 4px rgba(10, 10, 10, 0.2);
+  cursor: grab;
+  transition: transform 160ms ease;
+}
+
+.range input[type="range"]:active::-moz-range-thumb {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+.range input[type="range"]:focus-visible::-webkit-slider-thumb {
+  outline: 3px solid rgba(245, 158, 11, 0.4);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .range {
+    gap: 10px;
+    padding: 6px 12px;
+  }
+  .range input[type="range"] {
+    width: 130px;
+  }
+}
+
+/* API table -------------------------------------------------------------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(10, 10, 10, 0.1);
+  border-radius: 12px;
+  background: var(--c-paper);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 10, 10, 0.25) transparent;
+}
+
+.table-wrap::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(10, 10, 10, 0.2);
+  border-radius: 999px;
+  transition: background 200ms ease;
+}
+
+.table-wrap::-webkit-scrollbar-thumb:hover {
+  background: rgba(10, 10, 10, 0.4);
+}
+
+.api-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+}
+
+.api-table th,
+.api-table td {
+  text-align: left;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(10, 10, 10, 0.12);
+  vertical-align: top;
+}
+
+@media (max-width: 640px) {
+  .api-table th,
+  .api-table td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+.api-table th {
+  font-family: var(--serif);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 15.5px;
+  background: var(--c-cream);
+  position: sticky;
+  top: 0;
+}
+
+.api-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.api-table td code {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  background: var(--c-paper);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(10, 10, 10, 0.1);
+}

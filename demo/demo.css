@@ -1,0 +1,32 @@
+/* ===========================================================================
+ * slickless demo — entry stylesheet
+ * Each module lives in ./styles/ and is loaded in cascade order below.
+ * The library's own styles are pulled in by `import "slickless"` in demo.ts
+ * (via `src/index.ts`), so we don't @import them again here.
+ * ======================================================================== */
+
+/* Page chrome */
+@import "./styles/base.css";
+@import "./styles/layout.css";
+
+/* Sections */
+@import "./styles/hero.css";
+@import "./styles/code.css";
+@import "./styles/quickstart.css";
+@import "./styles/recipes.css";
+
+/* Reusable components */
+@import "./styles/components.css";
+
+/* Examples */
+@import "./styles/examples/_shared.css";
+@import "./styles/examples/thumb-row.css";
+@import "./styles/examples/fade.css";
+@import "./styles/examples/vertical.css";
+@import "./styles/examples/center.css";
+@import "./styles/examples/stage.css";
+@import "./styles/examples/custom-paging.css";
+@import "./styles/examples/adaptive.css";
+@import "./styles/examples/varwidth.css";
+@import "./styles/examples/lazy.css";
+@import "./styles/examples/events.css";

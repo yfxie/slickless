@@ -1,0 +1,137 @@
+/* Example: Linked carousels (asNavFor) — main stage + bottom nav strip. */
+
+#main-stage {
+  padding: 0 60px;
+}
+
+@media (max-width: 640px) {
+  #main-stage {
+    padding: 0 48px;
+  }
+}
+
+.stage .slickless__viewport {
+  height: 320px;
+  border-radius: 16px;
+  border: 1.5px solid var(--c-ink);
+}
+
+@media (max-width: 640px) {
+  .stage .slickless__viewport {
+    height: 220px;
+  }
+  .stage-slide {
+    font-size: 36px;
+    height: 220px;
+  }
+}
+
+.stage .slickless__arrow--prev {
+  left: 4px;
+}
+
+.stage .slickless__arrow--next {
+  right: 4px;
+}
+
+.stage-slide {
+  height: 320px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 56px;
+  letter-spacing: -0.03em;
+  color: var(--c-ink);
+  font-style: italic;
+}
+
+.nav-strip {
+  margin-top: 18px;
+  border-top: 1px solid rgba(10, 10, 10, 0.12);
+  padding-top: 14px;
+}
+
+.nav-strip .slickless__viewport {
+  padding: 0;
+}
+
+.nav-strip .slickless__slide {
+  padding: 0;
+}
+
+.nav-strip .slickless__slide > div {
+  --nav-accent: var(--c-ink);
+  position: relative;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 52px;
+  padding: 8px 10px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(12px, 2vw, 17px);
+  letter-spacing: -0.01em;
+  color: var(--c-muted);
+  cursor: pointer;
+  transition: color 200ms ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-strip .slickless__slide:nth-child(1) > div { --nav-accent: #f59e0b; }
+.nav-strip .slickless__slide:nth-child(2) > div { --nav-accent: #059669; }
+.nav-strip .slickless__slide:nth-child(3) > div { --nav-accent: #7c3aed; }
+.nav-strip .slickless__slide:nth-child(4) > div { --nav-accent: #db2777; }
+.nav-strip .slickless__slide:nth-child(5) > div { --nav-accent: #0284c7; }
+
+/* Color-coded baseline bar — always visible, fills on active. */
+.nav-strip .slickless__slide > div::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 3px;
+  width: 36%;
+  border-radius: 3px;
+  background: var(--nav-accent);
+  opacity: 0.22;
+  transform: translateX(-50%);
+  transition: opacity 240ms ease, width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-strip .slickless__slide > div:hover {
+  color: var(--c-ink);
+}
+.nav-strip .slickless__slide > div:hover::after {
+  opacity: 0.55;
+}
+
+.nav-strip .slickless__slide--current > div {
+  color: var(--c-ink);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.nav-strip .slickless__slide--current > div::after {
+  opacity: 1;
+  width: calc(100% - 16px);
+}
+
+@media (max-width: 640px) {
+  .nav-strip .slickless__slide > div {
+    height: 44px;
+    gap: 4px;
+    padding: 6px 6px 0;
+  }
+  .nav-strip .slickless__slide > div::after {
+    height: 2px;
+    width: 50%;
+  }
+}

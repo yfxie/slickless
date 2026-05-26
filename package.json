@@ -1,0 +1,63 @@
+{
+  "name": "slickless",
+  "version": "0.1.0",
+  "description": "A jQuery-free port of slick carousel — small, accessible, framework-agnostic.",
+  "type": "module",
+  "main": "./dist/slickless.umd.cjs",
+  "module": "./dist/slickless.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/slickless.js",
+      "require": "./dist/slickless.umd.cjs"
+    },
+    "./style.css": "./dist/slickless.css",
+    "./css": "./dist/slickless.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "vite --config vite.demo.config.ts",
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "carousel",
+    "slider",
+    "slick",
+    "slideshow",
+    "jquery-free",
+    "vanilla",
+    "typescript",
+    "accessible"
+  ],
+  "author": "yfxie",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yfxie/slickless.git"
+  },
+  "homepage": "https://yfxie.github.io/slickless/",
+  "bugs": {
+    "url": "https://github.com/yfxie/slickless/issues"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.10.0",
+    "happy-dom": "^20.9.0",
+    "typescript": "^5.7.2",
+    "vite": "^8.0.14",
+    "vite-plugin-dts": "^5.0.1",
+    "vitest": "^4.1.7"
+  }
+}

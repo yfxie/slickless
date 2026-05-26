@@ -1,0 +1,126 @@
+/* Header, footer, and section chrome. */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(253, 252, 248, 0.92);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--c-ink);
+}
+
+.logo__mark {
+  color: var(--c-ink);
+  display: inline-flex;
+}
+
+.site-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 22px;
+  font-size: 14.5px;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: var(--c-muted);
+  transition: color 160ms ease;
+}
+
+.site-nav a:hover {
+  color: var(--c-ink);
+}
+
+.site-nav__github {
+  display: inline-flex;
+}
+
+@media (max-width: 640px) {
+  .site-header .container {
+    height: 56px;
+    gap: 12px;
+  }
+  .logo__wordmark {
+    display: none;
+  }
+  .site-nav {
+    gap: 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-nav a:not(.site-nav__github):nth-of-type(3) {
+    display: none; /* drop "Install" first */
+  }
+}
+
+/* Sections --------------------------------------------------------------- */
+
+.section {
+  padding: 88px 0;
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 56px 0;
+  }
+}
+
+.section--surface {
+  background: var(--c-cream);
+  border-top: 1px solid rgba(10, 10, 10, 0.1);
+  border-bottom: 1px solid rgba(10, 10, 10, 0.1);
+}
+
+.section__title {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 56px);
+  letter-spacing: -0.035em;
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+
+.section__lead {
+  font-size: 18px;
+  max-width: 58ch;
+  color: var(--c-muted);
+  margin: 0 0 56px;
+}
+
+/* Footer ----------------------------------------------------------------- */
+
+.site-footer {
+  background: var(--c-ink);
+  color: rgba(253, 252, 248, 0.78);
+  padding: 48px 0;
+  text-align: center;
+}
+
+.site-footer a {
+  color: var(--c-paper);
+}
+
+.site-footer p {
+  margin: 4px 0;
+  font-size: 14px;
+}

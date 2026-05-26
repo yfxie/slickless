@@ -1,0 +1,65 @@
+/* Example: Center mode. */
+
+#center-carousel.center-row {
+  padding: 0 56px;
+}
+
+@media (max-width: 640px) {
+  #center-carousel.center-row {
+    padding: 0 40px;
+  }
+  .ctile {
+    height: 160px;
+    font-size: 64px;
+  }
+}
+
+.center-row .slickless__viewport {
+  padding: 24px 0;
+}
+
+.center-row .slickless__slide {
+  padding: 0 7px;
+}
+
+.center-row .slickless__arrow--prev {
+  left: 4px;
+}
+
+.center-row .slickless__arrow--next {
+  right: 4px;
+}
+
+.ctile {
+  height: 200px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 96px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--c-ink);
+  background: var(--c-cream);
+  border: 1.5px solid var(--c-ink);
+}
+
+.ctile--a {
+  background: #fde68a;
+}
+.ctile--b {
+  background: #bae6fd;
+}
+.ctile--c {
+  background: #fbcfe8;
+}
+.ctile--d {
+  background: #d9f99d;
+}
+.ctile--e {
+  background: #c7d2fe;
+}
+.ctile--f {
+  background: #fed7aa;
+}

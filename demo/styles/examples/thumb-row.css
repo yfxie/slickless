@@ -1,0 +1,74 @@
+/* Example: Multiple slides (thumb row). */
+
+#multi-carousel.thumb-row {
+  padding: 0 60px;
+}
+
+@media (max-width: 640px) {
+  #multi-carousel.thumb-row {
+    padding: 0 48px;
+  }
+  .thumb {
+    height: 160px;
+    font-size: 18px;
+  }
+}
+
+.thumb-row .slickless__viewport {
+  padding: 8px 0 8px;
+}
+
+.thumb-row .slickless__slide {
+  padding: 0 6px;
+}
+
+.thumb-row .slickless__arrow--prev {
+  left: 4px;
+}
+
+.thumb-row .slickless__arrow--next {
+  right: 4px;
+}
+
+.thumb {
+  height: 200px;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--c-paper);
+  border: 1.5px solid var(--c-ink);
+  transition: transform 220ms ease;
+}
+
+.thumb:hover {
+  transform: translateY(-2px);
+}
+
+.thumb--01 {
+  background: linear-gradient(135deg, #0f766e, #134e4a);
+}
+.thumb--02 {
+  background: linear-gradient(135deg, #4d7c0f, #1a2e05);
+}
+.thumb--03 {
+  background: linear-gradient(135deg, #0e7490, #155e75);
+}
+.thumb--04 {
+  background: linear-gradient(135deg, #b45309, #78350f);
+}
+.thumb--05 {
+  background: linear-gradient(135deg, #7c3aed, #4c1d95);
+}
+.thumb--06 {
+  background: linear-gradient(135deg, #be185d, #831843);
+}
+.thumb--07 {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+}
+.thumb--08 {
+  background: linear-gradient(135deg, #be123c, #881337);
+}

@@ -1,0 +1,116 @@
+/* Example: Vertical timeline. */
+
+#vertical-carousel.vertical-stack {
+  padding: 8px 56px 8px 0;
+}
+
+@media (max-width: 640px) {
+  #vertical-carousel.vertical-stack {
+    padding-right: 44px;
+  }
+}
+
+.vertical-stack {
+  position: relative;
+  height: 380px;
+  background: transparent;
+  border: 0;
+  border-left: 1px dashed rgba(10, 10, 10, 0.2);
+}
+
+@media (max-width: 640px) {
+  .vertical-stack {
+    height: 320px;
+  }
+}
+
+.vertical-stack .slickless__viewport {
+  margin-left: -1px;
+}
+
+.vertical-stack .slickless__arrow {
+  right: 0;
+  left: auto;
+  background: var(--c-paper);
+}
+
+.vstep {
+  display: flex !important;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 16px 12px 22px;
+  position: relative;
+  transition: color 240ms ease, opacity 240ms ease;
+  color: var(--c-muted);
+}
+
+.vstep::before {
+  /* Tick on the timeline that sits flush with the dashed connector. */
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c-paper);
+  border: 1.5px solid rgba(10, 10, 10, 0.35);
+  transform: translateY(-50%);
+  transition: background 240ms ease, border-color 240ms ease, transform 240ms ease;
+}
+
+.vstep__i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--c-cream);
+  border: 1px solid rgba(10, 10, 10, 0.18);
+  color: var(--c-ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+  transition: background 240ms ease, color 240ms ease, border-color 240ms ease;
+}
+
+.vstep__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vstep__title {
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: inherit;
+}
+
+.vstep__sub {
+  font-size: 12.5px;
+  color: rgba(10, 10, 10, 0.5);
+  line-height: 1.35;
+}
+
+/* Highlight the slide currently in focus on the timeline. */
+.vertical-stack .slickless__slide--current .vstep {
+  color: var(--c-ink);
+}
+
+.vertical-stack .slickless__slide--current .vstep::before {
+  background: var(--c-amber);
+  border-color: var(--c-amber);
+  transform: translateY(-50%) scale(1.4);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.18);
+}
+
+.vertical-stack .slickless__slide--current .vstep__i {
+  background: var(--c-ink);
+  color: var(--c-paper);
+  border-color: var(--c-ink);
+}

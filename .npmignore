@@ -1,0 +1,11 @@
+src/
+tests/
+demo/
+demo-dist/
+.github/
+node_modules/
+*.config.ts
+tsconfig*.json
+.gitignore
+.npmignore
+bun.lockb

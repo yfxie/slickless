@@ -1,0 +1,56 @@
+/* Shared example chrome — header, two-column body, demo column. */
+
+.example {
+  margin-bottom: 96px;
+}
+
+@media (max-width: 640px) {
+  .example {
+    margin-bottom: 64px;
+  }
+}
+
+.example__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 980px) {
+  .example__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.example__demo {
+  min-width: 0;
+}
+
+.example__header {
+  margin-bottom: 28px;
+}
+
+.example__header h3 {
+  font-family: var(--serif);
+  font-size: 28px;
+  letter-spacing: -0.025em;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.example__header p {
+  margin: 0 0 12px;
+  color: var(--c-muted);
+  max-width: 60ch;
+}
+
+.example__opts code {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--c-cream);
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: var(--c-ink);
+  border: 1px solid rgba(10, 10, 10, 0.1);
+}

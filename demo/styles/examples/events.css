@@ -1,0 +1,179 @@
+/* Example: Events — carousel + live event log. */
+
+#events-carousel.events-stage {
+  padding: 0 60px;
+}
+
+@media (max-width: 640px) {
+  #events-carousel.events-stage {
+    padding: 0 48px;
+  }
+}
+
+.events-stage .slickless__viewport {
+  height: 240px;
+  border-radius: 14px;
+  border: 1.5px solid var(--c-ink);
+  background: var(--c-paper);
+}
+
+.events-stage .slickless__slide {
+  height: 240px;
+}
+
+.events-stage .slickless__arrow--prev {
+  left: 4px;
+}
+
+.events-stage .slickless__arrow--next {
+  right: 4px;
+}
+
+.event-slide {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+  font-family: var(--serif);
+  font-size: clamp(40px, 6vw, 72px);
+  letter-spacing: -0.04em;
+  color: var(--c-ink);
+}
+
+.event-slide--01 {
+  background: linear-gradient(135deg, #ecfeff, #a5f3fc);
+}
+.event-slide--02 {
+  background: linear-gradient(135deg, #fef3c7, #fcd34d);
+}
+.event-slide--03 {
+  background: linear-gradient(135deg, #fce7f3, #f9a8d4);
+}
+.event-slide--04 {
+  background: linear-gradient(135deg, #dcfce7, #86efac);
+}
+
+@media (max-width: 640px) {
+  .events-stage .slickless__viewport,
+  .events-stage .slickless__slide,
+  .event-slide {
+    height: 180px;
+  }
+}
+
+.event-log {
+  margin-top: 20px;
+  border: 1px solid rgba(10, 10, 10, 0.12);
+  border-radius: 12px;
+  background: var(--c-paper);
+  overflow: hidden;
+}
+
+.event-log__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+  background: var(--c-cream);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.event-log__clear {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--c-ink);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 160ms ease;
+}
+
+.event-log__clear:hover {
+  background: rgba(10, 10, 10, 0.08);
+}
+
+.event-log__list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(10, 10, 10, 0.2) transparent;
+}
+
+.event-log__row {
+  display: grid;
+  grid-template-columns: auto 130px 1fr;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.4;
+  border-bottom: 1px dashed rgba(10, 10, 10, 0.06);
+  animation: event-row-in 280ms ease;
+}
+
+.event-log__row:last-child {
+  border-bottom: 0;
+}
+
+@keyframes event-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.event-log__time {
+  color: var(--c-muted);
+  font-size: 11px;
+}
+
+.event-log__name {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+}
+
+.event-log__row--init .event-log__name {
+  color: var(--c-mint);
+}
+.event-log__row--beforeChange .event-log__name {
+  color: var(--c-blue);
+}
+.event-log__row--afterChange .event-log__name {
+  color: var(--c-indigo);
+}
+.event-log__row--swipe .event-log__name {
+  color: var(--c-amber);
+}
+.event-log__row--edge .event-log__name {
+  color: var(--c-rose);
+}
+
+.event-log__detail {
+  color: var(--c-ink);
+  word-break: break-word;
+}
+
+.event-log__empty {
+  padding: 16px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--c-muted);
+}

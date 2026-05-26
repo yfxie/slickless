@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cpath d='M16 32h32M22 22l-8 10 8 10M42 22l8 10-8 10' stroke='%23fbbf24' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>slickless — a jQuery-free slick carousel, reborn</title>
+    <meta
+      name="description"
+      content="slickless is a small, accessible, jQuery-free port of slick carousel. Zero dependencies, modern DOM, modern motion."
+    />
+    <link rel="stylesheet" href="./demo.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header" role="banner">
+      <div class="container">
+        <a class="logo" href="#" aria-label="slickless home">
+          <span class="logo__mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="36" height="36">
+              <rect width="64" height="64" rx="14" fill="currentColor" />
+              <path
+                d="M16 32h32M22 22l-8 10 8 10M42 22l8 10-8 10"
+                stroke="#fbbf24"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+          </span>
+          <span class="logo__wordmark">slickless</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="#examples">Examples</a>
+          <a href="#styling">Styling</a>
+          <a href="#api">API</a>
+          <a href="#install">Install</a>
+          <a
+            href="https://github.com/yfxie/slickless"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="site-nav__github"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.13c-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.02 1.76 2.68 1.25 3.34.95.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.59.23 2.77.11 3.06.74.81 1.18 1.84 1.18 3.1 0 4.42-2.7 5.4-5.26 5.69.41.35.78 1.05.78 2.12v3.14c0 .31.21.66.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"
+              />
+            </svg>
+            <span class="sr-only">GitHub</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Hero ----------------------------------------------------------- -->
+      <section class="hero">
+        <div class="container hero__grid">
+          <div class="hero__text">
+            <p class="kicker">
+              <span class="kicker__dot" aria-hidden="true"></span>
+              v0.1 · pre-release
+            </p>
+            <h1 class="hero__title">
+              <span class="hero__title-em">slick</span><span class="hero__title-strike">.js</span
+              ><span class="hero__title-add">less</span>
+            </h1>
+            <p class="hero__lead">
+              A faithful port of <a href="https://kenwheeler.github.io/slick/" target="_blank" rel="noopener noreferrer">slick</a>
+              without the jQuery — accessible by default, with a modern pointer-driven swipe
+              gesture and a tiny gzip footprint.
+            </p>
+            <div class="hero__actions">
+              <a class="btn btn--primary" href="#install">Get started</a>
+              <a class="btn btn--ghost" href="#examples">View demos</a>
+            </div>
+            <ul class="hero__stats" aria-label="Highlights">
+              <li><strong>0</strong><span>dependencies</span></li>
+              <li><strong>~8k</strong><span>gzipped</span></li>
+              <li><strong>ESM</strong><span>+ UMD + CJS</span></li>
+              <li><strong>a11y</strong><span>by default</span></li>
+            </ul>
+          </div>
+
+          <!-- Hero showcase carousel -->
+          <div class="hero__showcase">
+            <div class="showcase-frame">
+              <div id="hero-carousel" class="hero-carousel">
+                <div class="hero-card hero-card--mint">
+                  <span class="hero-card__num">01</span>
+                  <div class="hero-card__body">
+                    <h3>Centered focus.</h3>
+                    <p>Highlight a single slide while peeking neighbors.</p>
+                  </div>
+                </div>
+                <div class="hero-card hero-card--amber">
+                  <span class="hero-card__num">02</span>
+                  <div class="hero-card__body">
+                    <h3>Pointer-perfect.</h3>
+                    <p>Touch, mouse, pen — one unified handler.</p>
+                  </div>
+                </div>
+                <div class="hero-card hero-card--rose">
+                  <span class="hero-card__num">03</span>
+                  <div class="hero-card__body">
+                    <h3>Respects motion.</h3>
+                    <p>prefers-reduced-motion turns transitions off.</p>
+                  </div>
+                </div>
+                <div class="hero-card hero-card--indigo">
+                  <span class="hero-card__num">04</span>
+                  <div class="hero-card__body">
+                    <h3>Reads as a region.</h3>
+                    <p>Real ARIA, real keyboard, real focus management.</p>
+                  </div>
+                </div>
+                <div class="hero-card hero-card--lime">
+                  <span class="hero-card__num">05</span>
+                  <div class="hero-card__body">
+                    <h3>Lazy by request.</h3>
+                    <p>ondemand and progressive image loading built in.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <pre class="code code--hero"><code><span class="code-kw">new</span> Slickless(<span class="code-str">"#hero-carousel"</span>, {
+  slidesToShow: <span class="code-num">1</span>,
+  centerMode: <span class="code-kw">true</span>,
+  centerPadding: <span class="code-str">"32px"</span>,
+  autoplay: <span class="code-kw">true</span>,
+  autoplaySpeed: <span class="code-num">3200</span>,
+  speed: <span class="code-num">600</span>,
+  dots: <span class="code-kw">true</span>,
+  arrows: <span class="code-kw">false</span>,
+  infinite: <span class="code-kw">true</span>,
+});</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quickstart ----------------------------------------------------- -->
+      <section id="install" class="section section--surface">
+        <div class="container">
+          <h2 class="section__title">Quickstart</h2>
+          <p class="section__lead">
+            Three small steps and you have a carousel running. No build-time
+            transform, no template compiler — just import the module and point
+            it at any element.
+          </p>
+
+          <ol class="steps">
+            <li class="steps__item">
+              <span class="steps__num">01</span>
+              <div class="steps__content">
+                <h3 class="steps__title">Install the package</h3>
+                <p class="steps__desc">Pick your runtime — slickless has zero peer dependencies.</p>
+                <div class="code-grid">
+                  <pre class="code"><code><span class="code-cmd">bun</span> add slickless</code></pre>
+                  <pre class="code"><code><span class="code-cmd">pnpm</span> add slickless</code></pre>
+                  <pre class="code"><code><span class="code-cmd">npm i</span> slickless</code></pre>
+                </div>
+              </div>
+            </li>
+
+            <li class="steps__item">
+              <span class="steps__num">02</span>
+              <div class="steps__content">
+                <h3 class="steps__title">Drop in your markup</h3>
+                <p class="steps__desc">
+                  Any element with direct children works. Each child becomes a slide; their HTML is preserved as-is.
+                </p>
+                <pre class="code code--block"><code><span class="code-com">&lt;!-- index.html --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-str">"my-carousel"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div&gt;</span>Slide one — anything inside here is a slide.<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div&gt;</span>Slide two — an &lt;img&gt;, a &lt;figure&gt;, a whole card…<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div&gt;</span>Slide three.<span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;div&gt;</span>Slide four.<span class="code-tag">&lt;/div&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+              </div>
+            </li>
+
+            <li class="steps__item">
+              <span class="steps__num">03</span>
+              <div class="steps__content">
+                <h3 class="steps__title">Initialise from JavaScript</h3>
+                <p class="steps__desc">
+                  Import the stylesheet once, then construct an instance. You can pass a CSS selector or an <code>HTMLElement</code>.
+                </p>
+                <pre class="code code--block"><code><span class="code-com">// main.js</span>
+<span class="code-kw">import</span> { Slickless } <span class="code-kw">from</span> <span class="code-str">"slickless"</span>;
+<span class="code-kw">import</span> <span class="code-str">"slickless/style.css"</span>;
+
+<span class="code-kw">const</span> carousel = <span class="code-kw">new</span> Slickless(<span class="code-str">"#my-carousel"</span>, {
+  slidesToShow: <span class="code-num">3</span>,
+  infinite: <span class="code-kw">true</span>,
+  dots: <span class="code-kw">true</span>,
+});
+
+<span class="code-com">// drive it programmatically</span>
+carousel.next();
+carousel.on(<span class="code-str">"afterChange"</span>, ({ currentSlide }) =&gt; {
+  console.log(<span class="code-str">"on slide"</span>, currentSlide);
+});</code></pre>
+              </div>
+            </li>
+          </ol>
+
+          <p class="steps__note">
+            That's it. Scroll down for every option, method and event — or skip
+            straight to the
+            <a href="#examples">live examples</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Examples ------------------------------------------------------- -->
+      <section id="examples" class="section">
+        <div class="container">
+          <h2 class="section__title">Examples</h2>
+          <p class="section__lead">
+            Same option surface as slick. Different runtime — no jQuery, no monkey-patched
+            prototypes, no globals.
+          </p>
+
+          <!-- Multiple slides -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Multiple slides, responsive</h3>
+              <p>Three up on desktop, two on tablet, one on phone. Drag, tap, and arrow-key.</p>
+            </header>
+            <div class="example__body">
+              <div id="multi-carousel" class="thumb-row example__demo">
+                <div class="thumb thumb--01"><span>Mountains</span></div>
+                <div class="thumb thumb--02"><span>Forest</span></div>
+                <div class="thumb thumb--03"><span>Reef</span></div>
+                <div class="thumb thumb--04"><span>Desert</span></div>
+                <div class="thumb thumb--05"><span>Aurora</span></div>
+                <div class="thumb thumb--06"><span>Steppe</span></div>
+                <div class="thumb thumb--07"><span>Tundra</span></div>
+                <div class="thumb thumb--08"><span>Volcano</span></div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">new</span> Slickless(<span class="code-str">"#multi-carousel"</span>, {
+  slidesToShow: <span class="code-num">3</span>,
+  slidesToScroll: <span class="code-num">1</span>,
+  dots: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">true</span>,
+  responsive: [
+    { breakpoint: <span class="code-num">960</span>, settings: { slidesToShow: <span class="code-num">2</span> } },
+    { breakpoint: <span class="code-num">600</span>, settings: { slidesToShow: <span class="code-num">1</span> } },
+  ],
+});</code></pre>
+            </div>
+          </article>
+
+          <!-- Fade -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Fade</h3>
+              <p>Cross-fade between full-width slides. Autoplay, paused on focus and hover.</p>
+            </header>
+            <div class="example__body">
+              <div id="fade-carousel" class="fade-stage example__demo">
+                <div class="fade-slide fade-slide--01">
+                  <p class="fade-slide__num">01 / 04</p>
+                  <blockquote>
+                    &ldquo;The best interface is the one you forget you're using.&rdquo;
+                  </blockquote>
+                </div>
+                <div class="fade-slide fade-slide--02">
+                  <p class="fade-slide__num">02 / 04</p>
+                  <blockquote>
+                    &ldquo;Less, but better. <em>Weniger, aber besser.</em>&rdquo;
+                  </blockquote>
+                </div>
+                <div class="fade-slide fade-slide--03">
+                  <p class="fade-slide__num">03 / 04</p>
+                  <blockquote>
+                    &ldquo;Simplicity is the ultimate sophistication.&rdquo;
+                  </blockquote>
+                </div>
+                <div class="fade-slide fade-slide--04">
+                  <p class="fade-slide__num">04 / 04</p>
+                  <blockquote>
+                    &ldquo;Make it work, make it right, make it fast.&rdquo;
+                  </blockquote>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">new</span> Slickless(<span class="code-str">"#fade-carousel"</span>, {
+  fade: <span class="code-kw">true</span>,
+  autoplay: <span class="code-kw">true</span>,
+  autoplaySpeed: <span class="code-num">3500</span>,
+  speed: <span class="code-num">700</span>,
+  dots: <span class="code-kw">true</span>,
+  arrows: <span class="code-kw">false</span>,
+  infinite: <span class="code-kw">true</span>,
+});</code></pre>
+            </div>
+          </article>
+
+          <!-- Vertical -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Vertical</h3>
+              <p>Stack-up navigation, drag vertically.</p>
+            </header>
+            <div class="example__body">
+              <div id="vertical-carousel" class="vertical-stack example__demo">
+                <div class="vstep">
+                  <span class="vstep__i">01</span>
+                  <span class="vstep__body">
+                    <span class="vstep__title">Initialize the canvas</span>
+                    <span class="vstep__sub">Read children, wrap each one as a slide.</span>
+                  </span>
+                </div>
+                <div class="vstep">
+                  <span class="vstep__i">02</span>
+                  <span class="vstep__body">
+                    <span class="vstep__title">Bind pointer handlers</span>
+                    <span class="vstep__sub">Unified touch, mouse and pen drag.</span>
+                  </span>
+                </div>
+                <div class="vstep">
+                  <span class="vstep__i">03</span>
+                  <span class="vstep__body">
+                    <span class="vstep__title">Schedule autoplay</span>
+                    <span class="vstep__sub">Optional; pauses on hover and focus.</span>
+                  </span>
+                </div>
+                <div class="vstep">
+                  <span class="vstep__i">04</span>
+                  <span class="vstep__body">
+                    <span class="vstep__title">Wire ARIA roles</span>
+                    <span class="vstep__sub">region, group, roledescription, labels.</span>
+                  </span>
+                </div>
+                <div class="vstep">
+                  <span class="vstep__i">05</span>
+                  <span class="vstep__body">
+                    <span class="vstep__title">Emit init event</span>
+                    <span class="vstep__sub">Deferred so post-construction listeners catch it.</span>
+                  </span>
+                </div>
+                <div class="vstep">
+                  <span class="vstep__i">06</span>
+                  <span class="vstep__body">
+                    <span class="vstep__title">Focus first slide</span>
+                    <span class="vstep__sub">Ready for keyboard navigation.</span>
+                  </span>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">new</span> Slickless(<span class="code-str">"#vertical-carousel"</span>, {
+  vertical: <span class="code-kw">true</span>,
+  slidesToShow: <span class="code-num">3</span>,
+  slidesToScroll: <span class="code-num">1</span>,
+  arrows: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">true</span>,
+  speed: <span class="code-num">400</span>,
+});</code></pre>
+            </div>
+          </article>
+
+          <!-- Center mode -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Center mode</h3>
+              <p>
+                Focused slide centered; siblings peek with a soft scale-down. Drag the slider
+                to feel <code>centerPadding</code> shrink the focused slide and expose more of
+                the neighbours.
+              </p>
+              <label class="range" for="center-padding-range">
+                <span class="range__label">centerPadding</span>
+                <input
+                  type="range"
+                  id="center-padding-range"
+                  min="0"
+                  max="120"
+                  step="5"
+                  value="60"
+                />
+                <span class="range__value" id="center-padding-value">60px</span>
+              </label>
+            </header>
+            <div class="example__body">
+              <div id="center-carousel" class="center-row example__demo">
+                <div class="ctile ctile--a">A</div>
+                <div class="ctile ctile--b">B</div>
+                <div class="ctile ctile--c">C</div>
+                <div class="ctile ctile--d">D</div>
+                <div class="ctile ctile--e">E</div>
+                <div class="ctile ctile--f">F</div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">new</span> Slickless(<span class="code-str">"#center-carousel"</span>, {
+  centerMode: <span class="code-kw">true</span>,
+  centerPadding: <span class="code-str">"60px"</span>,
+  slidesToShow: <span class="code-num">3</span>,
+  focusOnSelect: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">true</span>,
+  speed: <span class="code-num">400</span>,
+  arrows: <span class="code-kw">true</span>,
+  responsive: [
+    { breakpoint: <span class="code-num">720</span>, settings: { slidesToShow: <span class="code-num">1</span>, centerPadding: <span class="code-str">"30px"</span> } },
+  ],
+});</code></pre>
+            </div>
+          </article>
+
+          <!-- AsNavFor -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Linked carousels (asNavFor)</h3>
+              <p>A main stage paired with a thumbnail strip. Click thumbs to drive the main.</p>
+            </header>
+            <div class="example__body">
+              <div class="example__demo">
+                <div id="main-stage" class="stage">
+                  <div class="stage-slide" style="background: linear-gradient(135deg,#fbbf24,#f59e0b)">
+                    <span>Solstice</span>
+                  </div>
+                  <div class="stage-slide" style="background: linear-gradient(135deg,#34d399,#059669)">
+                    <span>Equinox</span>
+                  </div>
+                  <div class="stage-slide" style="background: linear-gradient(135deg,#a78bfa,#7c3aed)">
+                    <span>Eclipse</span>
+                  </div>
+                  <div class="stage-slide" style="background: linear-gradient(135deg,#f472b6,#db2777)">
+                    <span>Auroral</span>
+                  </div>
+                  <div class="stage-slide" style="background: linear-gradient(135deg,#38bdf8,#0284c7)">
+                    <span>Penumbra</span>
+                  </div>
+                </div>
+                <div id="nav-strip" class="nav-strip">
+                  <div>Solstice</div>
+                  <div>Equinox</div>
+                  <div>Eclipse</div>
+                  <div>Auroral</div>
+                  <div>Penumbra</div>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-com">// Initialise the nav first so the main can subscribe to it.</span>
+<span class="code-kw">new</span> Slickless(<span class="code-str">"#nav-strip"</span>, {
+  slidesToShow: <span class="code-num">5</span>,
+  slidesToScroll: <span class="code-num">1</span>,
+  arrows: <span class="code-kw">false</span>,
+  focusOnSelect: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">false</span>,
+  draggable: <span class="code-kw">false</span>,
+  speed: <span class="code-num">300</span>,
+});
+
+<span class="code-kw">new</span> Slickless(<span class="code-str">"#main-stage"</span>, {
+  slidesToShow: <span class="code-num">1</span>,
+  arrows: <span class="code-kw">true</span>,
+  fade: <span class="code-kw">true</span>,
+  asNavFor: <span class="code-str">"#nav-strip"</span>,
+  infinite: <span class="code-kw">true</span>,
+  speed: <span class="code-num">600</span>,
+});</code></pre>
+            </div>
+          </article>
+
+          <!-- Custom paging -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Custom paging</h3>
+              <p>Replace dots with anything — labels, thumbnails, fractions.</p>
+            </header>
+            <div class="example__body">
+              <div id="custom-paging-carousel" class="phrase-stage example__demo">
+                <div class="phrase">Reactive without the runtime tax.</div>
+                <div class="phrase">A carousel that reads like a sentence.</div>
+                <div class="phrase">Built in the browser, for the browser.</div>
+                <div class="phrase">Nothing imported. Nothing implied.</div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">new</span> Slickless(<span class="code-str">"#custom-paging-carousel"</span>, {
+  slidesToShow: <span class="code-num">1</span>,
+  arrows: <span class="code-kw">false</span>,
+  dots: <span class="code-kw">true</span>,
+  speed: <span class="code-num">500</span>,
+  infinite: <span class="code-kw">true</span>,
+  customPaging: (i, total) =&gt; {
+    <span class="code-kw">const</span> btn = document.createElement(<span class="code-str">"button"</span>);
+    btn.type = <span class="code-str">"button"</span>;
+    btn.className = <span class="code-str">"frac"</span>;
+    btn.setAttribute(<span class="code-str">"aria-label"</span>, <span class="code-str">`Go to slide ${i + 1}`</span>);
+    btn.textContent = <span class="code-str">`${String(i + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")}`</span>;
+    <span class="code-kw">return</span> btn;
+  },
+});</code></pre>
+            </div>
+          </article>
+
+          <!-- Adaptive height -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Adaptive height</h3>
+              <p>
+                The viewport resizes itself to whichever slide is in focus — handy when slides have
+                very different aspect ratios. Flick the switch to feel the difference.
+              </p>
+              <label class="toggle" for="adaptive-toggle">
+                <span class="toggle__label">adaptiveHeight</span>
+                <span class="toggle__switch">
+                  <input type="checkbox" id="adaptive-toggle" checked />
+                  <span class="toggle__track" aria-hidden="true"></span>
+                </span>
+                <span class="toggle__state" id="adaptive-state">on</span>
+              </label>
+            </header>
+            <div class="example__body">
+              <div id="adaptive-carousel" class="adaptive-stage example__demo">
+                <div class="adapt adapt--short">
+                  <h4>A short one.</h4>
+                  <p>Just a single line of body copy.</p>
+                </div>
+                <div class="adapt adapt--medium">
+                  <h4>A medium-length panel.</h4>
+                  <p>
+                    Two paragraphs. The carousel reads each slide's natural height and animates
+                    the viewport to match.
+                  </p>
+                  <p>This second line pushes the box a little taller.</p>
+                </div>
+                <div class="adapt adapt--tall">
+                  <h4>A tall slide.</h4>
+                  <p>
+                    Four paragraphs of varying length. Notice the surrounding frame breathing
+                    when this slide gains focus.
+                  </p>
+                  <p>The viewport syncs after each slide-change finishes.</p>
+                  <p>No JS sizing needed in your CSS — slickless handles it.</p>
+                  <p>Disable with <code>adaptiveHeight: false</code> to lock it back down.</p>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">const</span> carousel = <span class="code-kw">new</span> Slickless(<span class="code-str">"#adaptive-carousel"</span>, {
+  adaptiveHeight: <span class="code-kw">true</span>,
+  dots: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">true</span>,
+  speed: <span class="code-num">450</span>,
+});
+
+<span class="code-com">// Toggle the option at runtime — setOptions rebuilds the carousel.</span>
+toggle.addEventListener(<span class="code-str">"change"</span>, () =&gt;
+  carousel.setOptions({ adaptiveHeight: toggle.checked }));</code></pre>
+            </div>
+          </article>
+
+          <!-- Variable width -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Variable width</h3>
+              <p>
+                Each slide keeps its own intrinsic width — perfect for tag rails, chip lists or
+                mixed-aspect cards. Toggle off to see every chip forced to the same width.
+              </p>
+              <label class="toggle" for="varwidth-toggle">
+                <span class="toggle__label">variableWidth</span>
+                <span class="toggle__switch">
+                  <input type="checkbox" id="varwidth-toggle" checked />
+                  <span class="toggle__track" aria-hidden="true"></span>
+                </span>
+                <span class="toggle__state" id="varwidth-state">on</span>
+              </label>
+            </header>
+            <div class="example__body">
+              <div id="varwidth-carousel" class="varwidth-row example__demo">
+                <div class="swatch" style="--swatch-color: #34d399">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Mint</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #f5e1c0">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Vintage Cream</span>
+                  <span class="swatch__code">#f5e1c0</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #6366f1">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Deep Indigo</span>
+                  <span class="swatch__code">#6366f1 · 500</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #f59e0b">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Amber</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #f472b6">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Penumbral Rose</span>
+                  <span class="swatch__code">extended palette</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #0284c7">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Steel Blue</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #84cc16">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Lime</span>
+                </div>
+                <div class="swatch" style="--swatch-color: #475569">
+                  <span class="swatch__chip"></span>
+                  <span class="swatch__name">Slate</span>
+                  <span class="swatch__code">cool grey · 600</span>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">const</span> carousel = <span class="code-kw">new</span> Slickless(<span class="code-str">"#varwidth-carousel"</span>, {
+  variableWidth: <span class="code-kw">true</span>,
+  slidesToScroll: <span class="code-num">1</span>,
+  infinite: <span class="code-kw">true</span>,
+  speed: <span class="code-num">350</span>,
+});
+
+<span class="code-com">// Toggle the option at runtime — setOptions rebuilds the carousel.</span>
+toggle.addEventListener(<span class="code-str">"change"</span>, () =&gt;
+  carousel.setOptions({ variableWidth: toggle.checked }));</code></pre>
+            </div>
+          </article>
+
+          <!-- Lazy load -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Lazy loading images</h3>
+              <p>
+                Mark slow images with <code>data-lazy</code>. In <code>ondemand</code> mode
+                the library swaps <code>data-lazy</code> for <code>src</code> only when a
+                slide is about to come into view; in <code>progressive</code> mode it loads
+                them all sequentially after init.
+              </p>
+              <div class="lazy-modes" role="radiogroup" aria-label="Lazy load mode">
+                <label class="lazy-mode">
+                  <input type="radio" name="lazy-mode" value="ondemand" checked />
+                  <span>ondemand</span>
+                </label>
+                <label class="lazy-mode">
+                  <input type="radio" name="lazy-mode" value="progressive" />
+                  <span>progressive</span>
+                </label>
+                <label class="lazy-mode">
+                  <input type="radio" name="lazy-mode" value="off" />
+                  <span>off</span>
+                </label>
+                <button type="button" id="lazy-reset" class="lazy-reset">Reset</button>
+              </div>
+            </header>
+            <div class="example__body">
+              <div class="example__demo">
+                <div id="lazy-carousel" class="lazy-stage">
+                  <figure class="lazy lazy--01">
+                    <img
+                      data-lazy="https://picsum.photos/seed/slickless-mountain/800/450"
+                      alt="Mountain"
+                    />
+                    <figcaption>Mountain</figcaption>
+                  </figure>
+                  <figure class="lazy lazy--02">
+                    <img
+                      data-lazy="https://picsum.photos/seed/slickless-forest/800/450"
+                      alt="Forest"
+                    />
+                    <figcaption>Forest</figcaption>
+                  </figure>
+                  <figure class="lazy lazy--03">
+                    <img
+                      data-lazy="https://picsum.photos/seed/slickless-ocean/800/450"
+                      alt="Ocean"
+                    />
+                    <figcaption>Ocean</figcaption>
+                  </figure>
+                  <figure class="lazy lazy--04">
+                    <img
+                      data-lazy="https://picsum.photos/seed/slickless-city/800/450"
+                      alt="City"
+                    />
+                    <figcaption>City</figcaption>
+                  </figure>
+                  <figure class="lazy lazy--05">
+                    <img
+                      data-lazy="https://picsum.photos/seed/slickless-desert/800/450"
+                      alt="Desert"
+                    />
+                    <figcaption>Desert</figcaption>
+                  </figure>
+                  <figure class="lazy lazy--06">
+                    <img
+                      data-lazy="https://picsum.photos/seed/slickless-sky/800/450"
+                      alt="Sky"
+                    />
+                    <figcaption>Sky</figcaption>
+                  </figure>
+                </div>
+                <div class="lazy-status" aria-live="polite">
+                  <span class="lazy-status__count" id="lazy-count">0</span>
+                  <span class="lazy-status__total">/ 6 images loaded</span>
+                  <span class="lazy-status__hint">Navigate to load the next one.</span>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-str">"lazy-carousel"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;img</span> <span class="code-attr">data-lazy</span>=<span class="code-str">"…/mountain.jpg"</span> <span class="code-attr">alt</span>=<span class="code-str">""</span> <span class="code-tag">/&gt;</span>
+  <span class="code-tag">&lt;img</span> <span class="code-attr">data-lazy</span>=<span class="code-str">"…/forest.jpg"</span> <span class="code-attr">alt</span>=<span class="code-str">""</span> <span class="code-tag">/&gt;</span>
+  <span class="code-com">… more slides</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-kw">const</span> lazy = <span class="code-kw">new</span> Slickless(<span class="code-str">"#lazy-carousel"</span>, {
+  lazyLoad: <span class="code-str">"ondemand"</span>,  <span class="code-com">// or "progressive" / false</span>
+  dots: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">false</span>,
+});
+
+<span class="code-com">// fires for every image as it resolves</span>
+lazy.on(<span class="code-str">"lazyLoaded"</span>, ({ image, src }) =&gt;
+  console.log(<span class="code-str">"loaded:"</span>, src));</code></pre>
+            </div>
+          </article>
+
+          <!-- Events -->
+          <article class="example">
+            <header class="example__header">
+              <h3>Events</h3>
+              <p>
+                Subscribe with <code>carousel.on(event, fn)</code>. Swipe, click an arrow or push
+                the carousel past an edge — the log fills as events fire.
+              </p>
+            </header>
+            <div class="example__body">
+              <div class="example__demo">
+                <div id="events-carousel" class="events-stage">
+                  <div class="event-slide event-slide--01">North</div>
+                  <div class="event-slide event-slide--02">East</div>
+                  <div class="event-slide event-slide--03">South</div>
+                  <div class="event-slide event-slide--04">West</div>
+                </div>
+                <div class="event-log" aria-live="polite" aria-label="Carousel events">
+                  <div class="event-log__head">
+                    <span>event log</span>
+                    <button type="button" id="events-clear" class="event-log__clear">clear</button>
+                  </div>
+                  <ol id="events-list" class="event-log__list">
+                    <li class="event-log__empty">No events yet. Try the arrows or a swipe.</li>
+                  </ol>
+                </div>
+              </div>
+              <pre class="code code--snippet"><code><span class="code-kw">const</span> carousel = <span class="code-kw">new</span> Slickless(<span class="code-str">"#events-carousel"</span>, {
+  dots: <span class="code-kw">true</span>,
+  infinite: <span class="code-kw">false</span>,
+  speed: <span class="code-num">400</span>,
+});
+
+<span class="code-com">// init — fires once after the carousel finishes building.</span>
+carousel.on(<span class="code-str">"init"</span>, () =&gt; log(<span class="code-str">"init"</span>));
+
+<span class="code-com">// beforeChange / afterChange — bracket every slide transition.</span>
+carousel.on(<span class="code-str">"beforeChange"</span>, ({ currentSlide, nextSlide }) =&gt;
+  log(<span class="code-str">`beforeChange: ${currentSlide} → ${nextSlide}`</span>));
+
+carousel.on(<span class="code-str">"afterChange"</span>, ({ currentSlide }) =&gt;
+  log(<span class="code-str">`afterChange: now on ${currentSlide}`</span>));
+
+<span class="code-com">// swipe — fires when a touch / pointer drag crosses the threshold.</span>
+carousel.on(<span class="code-str">"swipe"</span>, ({ direction }) =&gt;
+  log(<span class="code-str">`swipe: ${direction}`</span>));
+
+<span class="code-com">// edge — fires when goTo bumps into the start or end of a finite carousel.</span>
+carousel.on(<span class="code-str">"edge"</span>, ({ direction }) =&gt;
+  log(<span class="code-str">`edge hit: ${direction}`</span>));
+
+<span class="code-com">// You can also listen on the DOM:</span>
+<span class="code-com">// carousel.root.addEventListener("slickless:afterChange", e =&gt; ...);</span></code></pre>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Styling -------------------------------------------------------- -->
+      <section id="styling" class="section">
+        <div class="container">
+          <h2 class="section__title">Styling</h2>
+          <p class="section__lead">
+            slickless keeps styling out of the JS. Every visual concern — gaps, colours,
+            arrows, dots — is a few lines of CSS in your own stylesheet.
+          </p>
+
+          <div class="recipes">
+            <article class="recipe">
+              <h3 class="recipe__title">Gap between slides</h3>
+              <p class="recipe__lead">
+                The library doesn't ship a default gap. Add horizontal padding to the
+                slide wrapper — the JS-set width already uses <code>box-sizing: border-box</code>,
+                so the padding eats into the slide and becomes the visible gap.
+              </p>
+              <pre class="code code--block"><code><span class="code-com">/* 12px gap between every slide (6px on each side). */</span>
+<span class="code-tag">.my-carousel</span> <span class="code-tag">.slickless__slide</span> {
+  padding: <span class="code-num">0</span> <span class="code-num">6px</span>;
+}</code></pre>
+              <p class="recipe__note">
+                The slide count per viewport stays correct — the offset maths and
+                <code>slidesToShow</code> are unaffected. Use a stronger selector to opt out
+                for a specific carousel.
+              </p>
+            </article>
+
+            <article class="recipe">
+              <h3 class="recipe__title">Theme via CSS variables</h3>
+              <p class="recipe__lead">
+                Arrows, dots and focus rings read from CSS custom properties on the
+                <code>.slickless</code> root. Override them anywhere in your stylesheet.
+              </p>
+              <pre class="code code--block"><code><span class="code-tag">.slickless</span> {
+  --slickless-arrow-size: <span class="code-num">52px</span>;
+  --slickless-arrow-color: <span class="code-num">#fff</span>;
+  --slickless-arrow-bg: <span class="code-num">#0f172a</span>;
+  --slickless-arrow-bg-hover: <span class="code-num">#1e293b</span>;
+  --slickless-dot-color: <span class="code-str">rgba(255, 255, 255, 0.4)</span>;
+  --slickless-dot-color-active: <span class="code-num">#fff</span>;
+  --slickless-focus-ring: <span class="code-num">0</span> <span class="code-num">0</span> <span class="code-num">0</span> <span class="code-num">3px</span> <span class="code-num">#818cf8</span>;
+}</code></pre>
+            </article>
+
+            <article class="recipe">
+              <h3 class="recipe__title">Move the arrows outside the viewport</h3>
+              <p class="recipe__lead">
+                The library positions arrows at <code>left: 12px</code> / <code>right: 12px</code>.
+                Pull them into a padded area on the carousel root if you want them out of the slide.
+              </p>
+              <pre class="code code--block"><code><span class="code-com">/* Give the carousel room on the sides, then pin arrows to the new edges. */</span>
+<span class="code-tag">.my-carousel</span> {
+  padding: <span class="code-num">0</span> <span class="code-num">60px</span>;
+}
+<span class="code-tag">.my-carousel</span> <span class="code-tag">.slickless__arrow--prev</span> { left: <span class="code-num">4px</span>; }
+<span class="code-tag">.my-carousel</span> <span class="code-tag">.slickless__arrow--next</span> { right: <span class="code-num">4px</span>; }</code></pre>
+            </article>
+
+            <article class="recipe">
+              <h3 class="recipe__title">Avoid the pre-init layout jump</h3>
+              <p class="recipe__lead">
+                Before JavaScript runs, your children render as a tall vertical stack. After
+                init, slickless rebuilds them into a flex row at a known height — that's a
+                visible jolt unless the container reserves space ahead of time. Pick one of
+                these strategies.
+              </p>
+              <pre class="code code--block"><code><span class="code-com">/* 1. Most reliable — give the root the height you actually want. */</span>
+<span class="code-tag">#my-carousel</span> { height: <span class="code-num">320px</span>; }
+
+<span class="code-com">/* 2. Built-in helper — opt in by adding `class="slickless"` in your
+ *    HTML. The library then hides everything but the first slide
+ *    until init flips the `--initialized` class. */</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">id</span>=<span class="code-str">"my-carousel"</span> <span class="code-attr">class</span>=<span class="code-str">"slickless"</span><span class="code-tag">&gt;</span> … <span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-com">/* 3. Or hide the whole thing while it boots. */</span>
+<span class="code-tag">#my-carousel</span> { visibility: hidden; }
+<span class="code-tag">#my-carousel.slickless--initialized</span> { visibility: visible; }</code></pre>
+              <p class="recipe__note">
+                Strategy 1 is the most predictable and pairs well with the other two. Strategy
+                2 is free if you can put the class in the markup; the helper rule lives in the
+                library's stylesheet and only fires when both <code>.slickless</code> and
+                <em>not</em> <code>.slickless--initialized</code> are present.
+              </p>
+            </article>
+
+            <article class="recipe">
+              <h3 class="recipe__title">Per-slide state hooks</h3>
+              <p class="recipe__lead">
+                Slides receive class modifiers as the carousel updates. Target them to fade,
+                scale or highlight the active range.
+              </p>
+              <table class="api-table api-table--inline">
+                <thead><tr><th>Class</th><th>When applied</th></tr></thead>
+                <tbody>
+                  <tr><td><code>.slickless__slide--active</code></td><td>Slide is within the visible window.</td></tr>
+                  <tr><td><code>.slickless__slide--current</code></td><td>The focused slide (the &ldquo;leading&rdquo; one).</td></tr>
+                  <tr><td><code>.slickless__slide--cloned</code></td><td>Clone used for infinite looping.</td></tr>
+                  <tr><td><code>.slickless__slide--center</code></td><td>Center-mode focused slide.</td></tr>
+                  <tr><td><code>.slickless__arrow--disabled</code></td><td>Edge in non-infinite mode.</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- API ------------------------------------------------------------ -->
+      <section id="api" class="section section--surface">
+        <div class="container">
+          <h2 class="section__title">Options</h2>
+          <p class="section__lead">
+            All options are optional. Defaults are chosen to feel sensible out of the box.
+          </p>
+          <div class="table-wrap">
+            <table class="api-table">
+              <thead>
+                <tr><th>Option</th><th>Type</th><th>Default</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>arrows</code></td><td>boolean</td><td><code>true</code></td><td>Show prev / next arrows.</td></tr>
+                <tr><td><code>dots</code></td><td>boolean</td><td><code>false</code></td><td>Render dot pagination.</td></tr>
+                <tr><td><code>infinite</code></td><td>boolean</td><td><code>true</code></td><td>Loop slides via head/tail clones.</td></tr>
+                <tr><td><code>autoplay</code></td><td>boolean</td><td><code>false</code></td><td>Auto-advance slides.</td></tr>
+                <tr><td><code>autoplaySpeed</code></td><td>number</td><td><code>3000</code></td><td>Interval between auto-advances, ms.</td></tr>
+                <tr><td><code>autoplayDirection</code></td><td>"forward" | "backward"</td><td><code>"forward"</code></td><td>Direction of autoplay.</td></tr>
+                <tr><td><code>speed</code></td><td>number</td><td><code>400</code></td><td>Transition duration, ms.</td></tr>
+                <tr><td><code>cssEase</code></td><td>string</td><td><code>"cubic-bezier(0.22, 1, 0.36, 1)"</code></td><td>Any valid CSS easing string.</td></tr>
+                <tr><td><code>slidesToShow</code></td><td>number</td><td><code>1</code></td><td>How many slides visible per page.</td></tr>
+                <tr><td><code>slidesToScroll</code></td><td>number</td><td><code>1</code></td><td>How many slides advance per move.</td></tr>
+                <tr><td><code>fade</code></td><td>boolean</td><td><code>false</code></td><td>Use cross-fade instead of slide.</td></tr>
+                <tr><td><code>vertical</code></td><td>boolean</td><td><code>false</code></td><td>Stack slides vertically and slide on Y axis.</td></tr>
+                <tr><td><code>centerMode</code></td><td>boolean</td><td><code>false</code></td><td>Centre the focused slide; peek siblings.</td></tr>
+                <tr><td><code>centerPadding</code></td><td>string</td><td><code>"50px"</code></td><td>Padding around focused slide in center mode.</td></tr>
+                <tr><td><code>variableWidth</code></td><td>boolean</td><td><code>false</code></td><td>Use each slide's natural width.</td></tr>
+                <tr><td><code>initialSlide</code></td><td>number</td><td><code>0</code></td><td>Starting slide index.</td></tr>
+                <tr><td><code>rtl</code></td><td>boolean</td><td><code>false</code></td><td>Right-to-left direction.</td></tr>
+                <tr><td><code>draggable</code></td><td>boolean</td><td><code>true</code></td><td>Enable pointer / touch drag.</td></tr>
+                <tr><td><code>swipeThreshold</code></td><td>number</td><td><code>24</code></td><td>Pixels needed to trigger a swipe.</td></tr>
+                <tr><td><code>pauseOnHover</code></td><td>boolean</td><td><code>true</code></td><td>Pause autoplay while hovered.</td></tr>
+                <tr><td><code>pauseOnFocus</code></td><td>boolean</td><td><code>true</code></td><td>Pause autoplay while focus is inside.</td></tr>
+                <tr><td><code>accessibility</code></td><td>boolean</td><td><code>true</code></td><td>Arrow keys, Home, End navigation.</td></tr>
+                <tr><td><code>adaptiveHeight</code></td><td>boolean</td><td><code>false</code></td><td>Resize the viewport to current slide.</td></tr>
+                <tr><td><code>lazyLoad</code></td><td>"ondemand" | "progressive" | false</td><td><code>false</code></td><td>Lazy load <code>img[data-lazy]</code>.</td></tr>
+                <tr><td><code>respectReducedMotion</code></td><td>boolean</td><td><code>true</code></td><td>Skip animations when the user prefers reduced motion.</td></tr>
+                <tr><td><code>focusOnSelect</code></td><td>boolean</td><td><code>false</code></td><td>Clicking a slide navigates to it.</td></tr>
+                <tr><td><code>asNavFor</code></td><td>string | HTMLElement | null</td><td><code>null</code></td><td>Link to another initialised carousel for two-way sync.</td></tr>
+                <tr><td><code>prevArrow</code></td><td>string | HTMLElement | null</td><td><code>null</code></td><td>Custom previous-arrow HTML or element.</td></tr>
+                <tr><td><code>nextArrow</code></td><td>string | HTMLElement | null</td><td><code>null</code></td><td>Custom next-arrow HTML or element.</td></tr>
+                <tr><td><code>customPaging</code></td><td>(i, total) =&gt; HTMLElement | string</td><td><code>null</code></td><td>Render each dot button yourself.</td></tr>
+                <tr><td><code>responsive</code></td><td>ResponsiveBreakpoint[]</td><td><code>null</code></td><td>Per-breakpoint option overrides; <code>"unslick"</code> destroys.</td></tr>
+                <tr><td><code>ariaRoleDescription</code></td><td>string</td><td><code>"carousel"</code></td><td>Value for the root's <code>aria-roledescription</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 class="section__title" style="margin-top: 80px">Public API</h2>
+          <div class="table-wrap">
+            <table class="api-table">
+              <thead>
+                <tr><th>Method</th><th>Returns</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>next()</code></td><td>void</td><td>Advance by <code>slidesToScroll</code>.</td></tr>
+                <tr><td><code>prev()</code></td><td>void</td><td>Retreat by <code>slidesToScroll</code>.</td></tr>
+                <tr><td><code>goTo(i, immediate?)</code></td><td>void</td><td>Jump to slide; <code>immediate</code> skips animation.</td></tr>
+                <tr><td><code>play() / pause()</code></td><td>void</td><td>Start / stop autoplay.</td></tr>
+                <tr><td><code>setOptions(opts, refresh?)</code></td><td>void</td><td>Update options; defaults to a full rebuild.</td></tr>
+                <tr><td><code>addSlide(el, i?)</code></td><td>void</td><td>Insert a slide. Defaults to end.</td></tr>
+                <tr><td><code>removeSlide(i)</code></td><td>void</td><td>Remove a slide by its real index.</td></tr>
+                <tr><td><code>getCurrentSlide()</code></td><td>number</td><td>Index of the currently focused slide.</td></tr>
+                <tr><td><code>getSlideCount()</code></td><td>number</td><td>Number of real slides (excluding clones).</td></tr>
+                <tr><td><code>getSlides()</code></td><td>HTMLElement[]</td><td>Real slide elements only.</td></tr>
+                <tr><td><code>on(event, fn)</code></td><td>() =&gt; void</td><td>Subscribe; returns unsubscribe.</td></tr>
+                <tr><td><code>off(event, fn)</code></td><td>void</td><td>Remove a listener.</td></tr>
+                <tr><td><code>destroy()</code></td><td>void</td><td>Restore the original DOM and remove listeners.</td></tr>
+                <tr><td><code>reInit()</code></td><td>void</td><td>Rebuild the carousel with current options.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 class="section__title" style="margin-top: 80px">Events</h2>
+          <div class="table-wrap">
+            <table class="api-table">
+              <thead>
+                <tr><th>Event</th><th>Detail</th><th>When</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>init</code></td><td><code>{ slickless }</code></td><td>After first build.</td></tr>
+                <tr><td><code>beforeChange</code></td><td><code>{ currentSlide, nextSlide }</code></td><td>Before slide transition starts.</td></tr>
+                <tr><td><code>afterChange</code></td><td><code>{ currentSlide }</code></td><td>After slide transition finishes.</td></tr>
+                <tr><td><code>swipe</code></td><td><code>{ direction }</code></td><td>User completed a swipe gesture.</td></tr>
+                <tr><td><code>edge</code></td><td><code>{ direction }</code></td><td>Reached start or end (non-infinite).</td></tr>
+                <tr><td><code>breakpoint</code></td><td><code>{ breakpoint }</code></td><td>Responsive breakpoint switched.</td></tr>
+                <tr><td><code>lazyLoaded</code></td><td><code>{ image, src }</code></td><td>A lazy image finished loading.</td></tr>
+                <tr><td><code>lazyLoadError</code></td><td><code>{ image, src }</code></td><td>A lazy image failed to load.</td></tr>
+                <tr><td><code>destroy</code></td><td><code>{ slickless }</code></td><td>Carousel was destroyed.</td></tr>
+                <tr><td><code>reInit</code></td><td><code>{ slickless }</code></td><td>Carousel was rebuilt.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>
+          MIT · Built on top of inspiration from
+          <a href="https://github.com/kenwheeler/slick/" target="_blank" rel="noopener noreferrer">slick</a>
+          by Ken Wheeler.
+        </p>
+        <p>
+          <a href="https://github.com/yfxie/slickless" target="_blank" rel="noopener noreferrer">GitHub</a>
+          ·
+          <a href="https://www.npmjs.com/package/slickless" target="_blank" rel="noopener noreferrer">npm</a>
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="./demo.ts"></script>
+  </body>
+</html>

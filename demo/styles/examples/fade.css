@@ -1,0 +1,52 @@
+/* Example: Cross-fade carousel. */
+
+.fade-stage .slickless__viewport {
+  height: 360px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+  border: 1.5px solid var(--c-ink);
+}
+
+@media (max-width: 640px) {
+  .fade-stage .slickless__viewport {
+    height: 280px;
+  }
+}
+
+.fade-slide {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 64px;
+  color: var(--c-paper);
+  height: 100%;
+}
+
+@media (max-width: 640px) {
+  .fade-slide {
+    padding: 28px 32px;
+  }
+}
+
+.fade-slide__num {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--c-amber);
+  margin: 0 0 24px;
+}
+
+.fade-slide blockquote {
+  font-family: var(--serif);
+  font-size: clamp(28px, 4vw, 44px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+  max-width: 22ch;
+}
+
+.fade-slide em {
+  font-style: italic;
+  opacity: 0.7;
+}
