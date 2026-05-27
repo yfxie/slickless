@@ -530,7 +530,9 @@ export class Slickless {
     };
     this.emit("beforeChange", detail);
 
-    if (!wrapEnabled || this.options.fade) {
+    if (this.options.fade) {
+      // Fade transitions via per-slide opacity — there's no track movement
+      // to animate, so applyLayout is the entire visual update.
       this.currentIndex = target;
       this.applyLayout();
       const after: AfterChangeDetail = { currentSlide: this.currentIndex };
@@ -540,6 +542,8 @@ export class Slickless {
       return;
     }
 
+    // Slide mode — animate the track transform. Both infinite and finite
+    // carousels share this path; only the wrap-snap inside finish() differs.
     this.animating = true;
     const trackIndex = target + this.cloneCount;
     this.animatingTo = trackIndex;
@@ -555,23 +559,31 @@ export class Slickless {
     this.updateCenterMode(trackIndex);
     // And the dots: highlight the upcoming page as soon as navigation starts,
     // so the indicator tracks the slide instead of lagging behind it.
-    this.updateDots(mod(target, this.slideCount));
+    this.updateDots(wrapEnabled ? mod(target, this.slideCount) : target);
 
     let finished = false;
     const finish = () => {
       if (finished) return;
       finished = true;
       this.animating = false;
-      const wrapped = mod(target, this.slideCount);
-      const needsSnap = wrapped !== target;
-      this.currentIndex = wrapped;
-      if (needsSnap) {
-        const newTrackIndex = wrapped + this.cloneCount;
-        // Suppress per-slide transitions across the snap so that handing the
-        // center class from the clone we animated into to the real slide
-        // doesn't trigger a second 0.92 → 1 scale animation.
-        this.suppressSlideTransitionsForOneFrame();
-        this.translateTo(this.indexToOffset(newTrackIndex), false);
+      // Infinite carousels may have animated through a clone — snap the
+      // track to the equivalent real slide so subsequent navigation has the
+      // right starting offset. Finite carousels animated to the actual
+      // target index, so nothing to do.
+      if (wrapEnabled) {
+        const wrapped = mod(target, this.slideCount);
+        const needsSnap = wrapped !== target;
+        this.currentIndex = wrapped;
+        if (needsSnap) {
+          const newTrackIndex = wrapped + this.cloneCount;
+          // Suppress per-slide transitions across the snap so that handing
+          // the center class from the clone we animated into to the real
+          // slide doesn't trigger a second 0.92 → 1 scale animation.
+          this.suppressSlideTransitionsForOneFrame();
+          this.translateTo(this.indexToOffset(newTrackIndex), false);
+        }
+      } else {
+        this.currentIndex = target;
       }
       this.animatingTo = null;
       this.updateAria();

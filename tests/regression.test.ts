@@ -208,6 +208,39 @@ describe("regression: edge event fires consistently from arrow clicks at the bou
   });
 });
 
+describe("regression: non-infinite slide carousels animate the track", () => {
+  it("applies a CSS transition when navigating via goTo", () => {
+    const root = track(makeRoot(5));
+    const s = new Slickless(root, {
+      infinite: false,
+      speed: 400,
+      respectReducedMotion: false,
+    });
+    const trackEl = root.querySelector<HTMLElement>(".slickless__track");
+    expect(trackEl).not.toBeNull();
+    s.goTo(2);
+    // Track must carry a transform transition while the animation is in
+    // flight — previously the non-infinite path snapped synchronously.
+    expect(trackEl!.style.transition).toMatch(/transform 400ms/);
+    s.destroy();
+  });
+
+  it("settles on the requested slide after the transition fires", async () => {
+    const root = track(makeRoot(5));
+    const s = new Slickless(root, {
+      infinite: false,
+      speed: 20,
+      respectReducedMotion: false,
+    });
+    s.goTo(3);
+    // Index advances only after transitionend (or the safety timeout).
+    expect(s.getCurrentSlide()).toBe(0);
+    await new Promise((r) => setTimeout(r, 120));
+    expect(s.getCurrentSlide()).toBe(3);
+    s.destroy();
+  });
+});
+
 describe("regression: fade + infinite wraps the index past the last slide", () => {
   it("cycles back to 0 instead of clamping at the last index", () => {
     const root = track(makeRoot(4));
