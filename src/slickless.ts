@@ -744,7 +744,7 @@ export class Slickless {
       window.addEventListener("resize", this.handleResize);
     }
 
-    if (this.options.draggable && !this.options.fade) this.bindPointerEvents();
+    if (this.options.draggable) this.bindPointerEvents();
     if (this.options.focusOnSelect) this.bindFocusOnSelect();
   }
 
@@ -762,10 +762,16 @@ export class Slickless {
   }
 
   private bindPointerEvents(): void {
+    // Fade carousels keep gesture detection but skip track-following: the
+    // slides are stacked absolutely and crossfade via opacity, so there's
+    // nothing to translate while the finger is down. Only the swipe
+    // verdict on pointerup matters.
+    const followsFinger = (): boolean => !this.options.fade;
+
     const onDown = (e: PointerEvent) => {
       if (this.animating) return;
       if (e.button !== undefined && e.button !== 0) return;
-      const startTransform = this.parseTranslate();
+      const startTransform = followsFinger() ? this.parseTranslate() : 0;
       this.pointer = {
         id: e.pointerId,
         startX: e.clientX,
@@ -776,7 +782,7 @@ export class Slickless {
         decided: false,
         isHorizontal: !this.options.vertical,
       };
-      this.track.style.transition = "";
+      if (followsFinger()) this.track.style.transition = "";
       this.root.classList.add(CLASS.dragging);
     };
 
@@ -796,12 +802,14 @@ export class Slickless {
           return;
         }
       }
-      const delta = this.options.vertical ? dy : dx;
-      const dir = this.options.rtl && !this.options.vertical ? -1 : 1;
-      const newOffset = this.pointer.startTransform - dir * delta;
-      const axis = this.options.vertical ? "Y" : "X";
-      const transformDir = this.options.rtl && !this.options.vertical ? 1 : -1;
-      this.track.style.transform = `translate${axis}(${transformDir * newOffset}px)`;
+      if (followsFinger()) {
+        const delta = this.options.vertical ? dy : dx;
+        const dir = this.options.rtl && !this.options.vertical ? -1 : 1;
+        const newOffset = this.pointer.startTransform - dir * delta;
+        const axis = this.options.vertical ? "Y" : "X";
+        const transformDir = this.options.rtl && !this.options.vertical ? 1 : -1;
+        this.track.style.transform = `translate${axis}(${transformDir * newOffset}px)`;
+      }
       if (typeof (e as PointerEvent).preventDefault === "function") e.preventDefault();
     };
 
@@ -833,7 +841,9 @@ export class Slickless {
           } satisfies SwipeDetail);
           this.next();
         }
-      } else {
+      } else if (followsFinger()) {
+        // Snap the track back to the resting position. Fade mode never
+        // moved the track so there's nothing to snap.
         this.goTo(this.currentIndex, true);
       }
     };
@@ -842,7 +852,7 @@ export class Slickless {
       if (!this.pointer || this.pointer.id !== e.pointerId) return;
       this.root.classList.remove(CLASS.dragging);
       this.pointer = null;
-      this.goTo(this.currentIndex, true);
+      if (followsFinger()) this.goTo(this.currentIndex, true);
     };
 
     const downHandler = onDown as (e: Event) => void;

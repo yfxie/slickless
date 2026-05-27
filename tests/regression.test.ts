@@ -241,6 +241,42 @@ describe("regression: non-infinite slide carousels animate the track", () => {
   });
 });
 
+describe("regression: fade supports swipe gestures", () => {
+  it("advances to the next slide on a horizontal swipe", async () => {
+    const root = track(makeRoot(4));
+    const s = new Slickless(root, {
+      fade: true,
+      infinite: true,
+      speed: 0,
+      respectReducedMotion: false,
+    });
+    const viewport = root.querySelector(".slickless__viewport") as HTMLElement;
+
+    function fire(type: string, target: EventTarget, x: number, y: number): void {
+      const ev = new PointerEvent(type, {
+        pointerId: 1,
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 0,
+        pointerType: "touch",
+      });
+      target.dispatchEvent(ev);
+    }
+
+    expect(s.getCurrentSlide()).toBe(0);
+    // Simulate a leftward swipe of 80 px (well over threshold 24).
+    fire("pointerdown", viewport, 300, 100);
+    fire("pointermove", window, 280, 100);
+    fire("pointermove", window, 220, 100);
+    fire("pointerup", window, 220, 100);
+    await new Promise((r) => setTimeout(r, 30));
+    expect(s.getCurrentSlide()).toBe(1);
+    s.destroy();
+  });
+});
+
 describe("regression: fade + infinite wraps the index past the last slide", () => {
   it("cycles back to 0 instead of clamping at the last index", () => {
     const root = track(makeRoot(4));
