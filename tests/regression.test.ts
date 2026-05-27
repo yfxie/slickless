@@ -208,6 +208,41 @@ describe("regression: edge event fires consistently from arrow clicks at the bou
   });
 });
 
+describe("regression: single-slide carousels hide dots and skip autoplay", () => {
+  it("does not render dots when there is only one slide", () => {
+    const root = track(makeRoot(1));
+    const s = new Slickless(root, { dots: true, speed: 0 });
+    expect(root.querySelector(".slickless__dots")).toBeNull();
+    s.destroy();
+  });
+
+  it("renders dots normally for two or more slides", () => {
+    const root = track(makeRoot(2));
+    const s = new Slickless(root, { dots: true, speed: 0 });
+    expect(root.querySelector(".slickless__dots")).not.toBeNull();
+    s.destroy();
+  });
+
+  it("does not start autoplay when there is only one slide", () => {
+    const root = track(makeRoot(1));
+    const s = new Slickless(root, {
+      autoplay: true,
+      autoplaySpeed: 30,
+      speed: 0,
+      respectReducedMotion: false,
+    });
+    // Calling play() directly must also no-op.
+    s.play();
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        expect(s.getCurrentSlide()).toBe(0);
+        s.destroy();
+        resolve();
+      }, 100);
+    });
+  });
+});
+
 describe("regression: non-infinite slide carousels animate the track", () => {
   it("applies a CSS transition when navigating via goTo", () => {
     const root = track(makeRoot(5));

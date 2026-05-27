@@ -247,7 +247,8 @@ export class Slickless {
     if (this.options.arrows && this.slideCount > this.options.slidesToShow) {
       this.buildArrows();
     }
-    if (this.options.dots && this.slideCount > 0) {
+    // Dots are meaningless when there's only one slide to navigate to.
+    if (this.options.dots && this.slideCount > 1) {
       this.buildDots();
     }
 
@@ -620,6 +621,8 @@ export class Slickless {
 
   play(): void {
     if (this.destroyed) return;
+    // Nothing to rotate through — silently skip instead of spinning a timer.
+    if (this.slideCount <= 1) return;
     this.options.autoplay = true;
     this.autoplayPaused = false;
     this.scheduleAutoplay();
