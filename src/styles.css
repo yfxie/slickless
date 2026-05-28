@@ -105,9 +105,15 @@
 
 /* Stack every slide in a single grid cell. Each slide remains in normal flow
  * so the track derives an intrinsic height from the tallest slide, which means
- * fade works out of the box without an explicit viewport height. */
+ * fade works out of the box without an explicit viewport height.
+ *
+ * The explicit `grid-template-columns: 100%` matters: without it the implicit
+ * column is sized to slide min-content, and slides whose only content is
+ * absolutely-positioned (e.g. a background `<figure>`) report min-content = 0,
+ * which collapses the column — and therefore the slide — to zero width. */
 .slickless--fade .slickless__track {
   display: grid;
+  grid-template-columns: 100%;
   position: relative;
   height: 100%;
 }
