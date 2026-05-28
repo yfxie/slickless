@@ -94,6 +94,19 @@
   align-items: flex-start;
 }
 
+/* When every slide fits in the viewport, centre the row so the slides sit
+ * balanced inside the available space instead of jamming against the start
+ * edge. `safe center` falls back to start whenever the items overflow the
+ * track (the normal multi-page carousel case), so translate-based scrolling
+ * continues to work without an extra class. centerMode is excluded because
+ * its translate maths assume items begin at the track origin — pre-centring
+ * the row would over-shift the focused slide. Fade isn't excluded because
+ * it overrides .slickless__track to `display: block`, where
+ * `justify-content` has no effect anyway. */
+.slickless:not(.slickless--center) .slickless__track {
+  justify-content: safe center;
+}
+
 .slickless--fade .slickless__track {
   display: block;
   position: relative;

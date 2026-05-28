@@ -234,6 +234,54 @@ describe("regression: manual navigation resets the autoplay timer", () => {
   });
 });
 
+describe("regression: all-fit carousels short-circuit dots/autoplay/clones", () => {
+  it("does not build dots when every slide is already visible", () => {
+    const root = track(makeRoot(3));
+    const s = new Slickless(root, { slidesToShow: 3, dots: true, speed: 0 });
+    expect(root.querySelector(".slickless__dots")).toBeNull();
+    s.destroy();
+  });
+
+  it("skips infinite cloning when every slide is already visible", () => {
+    const root = track(makeRoot(3));
+    const s = new Slickless(root, {
+      slidesToShow: 3,
+      infinite: true,
+      speed: 0,
+    });
+    expect(root.querySelectorAll(".slickless__slide--cloned").length).toBe(0);
+    expect(root.querySelectorAll(".slickless__slide").length).toBe(3);
+    s.destroy();
+  });
+
+  it("does not start autoplay when every slide is already visible", async () => {
+    const root = track(makeRoot(3));
+    const s = new Slickless(root, {
+      slidesToShow: 3,
+      autoplay: true,
+      autoplaySpeed: 30,
+      speed: 0,
+      respectReducedMotion: false,
+    });
+    await new Promise((r) => setTimeout(r, 100));
+    expect(s.getCurrentSlide()).toBe(0);
+    s.destroy();
+  });
+
+  it("does not translate the track when navigating an all-fit infinite carousel", () => {
+    const root = track(makeRoot(2));
+    const s = new Slickless(root, {
+      slidesToShow: 3,
+      infinite: true,
+      speed: 0,
+    });
+    s.goTo(1);
+    const trackEl = root.querySelector(".slickless__track") as HTMLElement;
+    expect(trackEl.style.transform).toMatch(/^(?:translateX\(0(?:px)?\)|translate3d\(0(?:px)?,)/);
+    s.destroy();
+  });
+});
+
 describe("regression: single-slide carousels hide dots and skip autoplay", () => {
   it("does not render dots when there is only one slide", () => {
     const root = track(makeRoot(1));

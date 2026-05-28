@@ -223,7 +223,12 @@ export class Slickless {
     const realSlides = this.originalChildren.map((child, i) => this.wrapAsSlide(child, i));
     this.slideCount = realSlides.length;
 
-    if (this.options.infinite && !this.options.fade && this.slideCount > 0) {
+    if (
+      this.options.infinite &&
+      !this.options.fade &&
+      this.slideCount > 0 &&
+      !this.allSlidesFit()
+    ) {
       // For variableWidth we can't predict how many slides the viewport will
       // hold (each slide has its own intrinsic width), so clone the full set
       // at both ends. For fixed-width layouts, slidesToShow tells us exactly
@@ -247,8 +252,8 @@ export class Slickless {
     if (this.options.arrows && this.slideCount > this.options.slidesToShow) {
       this.buildArrows();
     }
-    // Dots are meaningless when there's only one slide to navigate to.
-    if (this.options.dots && this.slideCount > 1) {
+    // Dots are meaningless when every slide is already visible at once.
+    if (this.options.dots && !this.allSlidesFit()) {
       this.buildDots();
     }
 
@@ -443,7 +448,21 @@ export class Slickless {
     return this.options.speed;
   }
 
+  /**
+   * Every slide already fits in the viewport — there's nothing to scroll to,
+   * so dots, autoplay and clones are all suppressed. variableWidth keeps the
+   * usual machinery because per-slide widths aren't predictable upfront.
+   */
+  private allSlidesFit(): boolean {
+    if (this.options.variableWidth) return false;
+    return this.slideCount > 0 && this.slideCount <= this.options.slidesToShow;
+  }
+
   private indexToOffset(trackIndex: number): number {
+    // No room to scroll — track stays put; CSS `justify-content: safe center`
+    // handles visual centering. centerMode keeps its own offset math because
+    // it already implements per-slide centering.
+    if (this.allSlidesFit() && !this.options.centerMode) return 0;
     if (this.options.variableWidth) {
       let offset = 0;
       for (let i = 0; i < trackIndex; i++) {
@@ -631,7 +650,7 @@ export class Slickless {
   play(): void {
     if (this.destroyed) return;
     // Nothing to rotate through — silently skip instead of spinning a timer.
-    if (this.slideCount <= 1) return;
+    if (this.allSlidesFit()) return;
     this.options.autoplay = true;
     this.autoplayPaused = false;
     this.scheduleAutoplay();
