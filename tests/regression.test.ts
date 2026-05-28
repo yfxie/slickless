@@ -350,6 +350,27 @@ describe("regression: non-infinite slide carousels animate the track", () => {
   });
 });
 
+describe("regression: fade does not position slides absolutely", () => {
+  // Earlier versions used `position: absolute` on fade slides, which pulled
+  // them out of normal flow — the track and viewport then collapsed to zero
+  // height unless the user set an explicit height on the viewport. We now
+  // stack slides in a single grid cell, so they remain in flow and give the
+  // track an intrinsic height. This test guards against a regression to the
+  // absolute-positioning approach.
+  it("leaves slides without inline absolute positioning", () => {
+    const root = track(makeRoot(3));
+    const s = new Slickless(root, { fade: true, speed: 0 });
+    const slides = root.querySelectorAll<HTMLElement>(".slickless__slide");
+    for (const slide of slides) {
+      expect(slide.style.position).toBe("");
+      expect(slide.style.top).toBe("");
+      expect(slide.style.left).toBe("");
+      expect(slide.style.height).toBe("");
+    }
+    s.destroy();
+  });
+});
+
 describe("regression: fade supports swipe gestures", () => {
   it("advances to the next slide on a horizontal swipe", async () => {
     const root = track(makeRoot(4));

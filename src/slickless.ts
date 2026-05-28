@@ -404,11 +404,6 @@ export class Slickless {
       for (let i = 0; i < this.slides.length; i++) {
         const slide = this.slides[i];
         if (!slide) continue;
-        slide.style.position = "absolute";
-        slide.style.top = "0";
-        slide.style.left = "0";
-        slide.style.width = "100%";
-        slide.style.height = "100%";
         slide.style.opacity = i === this.realToTrackIndex(this.currentIndex) ? "1" : "0";
         slide.style.zIndex = i === this.realToTrackIndex(this.currentIndex) ? "1" : "0";
         slide.style.transition = `opacity ${this.effectiveSpeed()}ms ${this.options.cssEase}`;

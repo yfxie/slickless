@@ -68,10 +68,6 @@
   min-height: 0;
 }
 
-.slickless--fade .slickless__viewport {
-  min-height: 1px;
-}
-
 /* Track ------------------------------------------------------------------- */
 
 .slickless__track {
@@ -107,8 +103,11 @@
   justify-content: safe center;
 }
 
+/* Stack every slide in a single grid cell. Each slide remains in normal flow
+ * so the track derives an intrinsic height from the tallest slide, which means
+ * fade works out of the box without an explicit viewport height. */
 .slickless--fade .slickless__track {
-  display: block;
+  display: grid;
   position: relative;
   height: 100%;
 }
@@ -133,9 +132,8 @@
 }
 
 .slickless--fade .slickless__slide {
-  position: absolute;
-  top: 0;
-  left: 0;
+  grid-column: 1;
+  grid-row: 1;
   width: 100%;
 }
 
