@@ -50,4 +50,30 @@ describe("responsive", () => {
     expect(s.options.slidesToShow).toBe(4);
     s.destroy();
   });
+
+  it("rebuilds dots when a breakpoint switch exits all-fit territory", () => {
+    // Wide viewport: base config shows all 3 slides at once → no dots needed.
+    setViewport(1200);
+    const root = makeRoot(3);
+    const s = new Slickless(root, {
+      slidesToShow: 3,
+      dots: true,
+      responsive: [{ breakpoint: 768, settings: { slidesToShow: 1 } }],
+    });
+    expect(root.querySelector(".slickless__dots")).toBeNull();
+
+    // Narrow viewport: slidesToShow drops to 1 → dots are now meaningful and
+    // must appear. happy-dom doesn't fire ResizeObserver from setViewport
+    // alone, so invoke the internal resize handler directly.
+    setViewport(500);
+    Object.defineProperty(root, "getBoundingClientRect", {
+      configurable: true,
+      value: () => ({ width: 500, height: 0, top: 0, left: 0, right: 500, bottom: 0, x: 0, y: 0, toJSON: () => "" }),
+    });
+    (s as unknown as { handleResize: () => void }).handleResize();
+
+    expect(root.querySelector(".slickless__dots")).not.toBeNull();
+    expect(root.querySelectorAll(".slickless__dot--bullet").length).toBe(3);
+    s.destroy();
+  });
 });

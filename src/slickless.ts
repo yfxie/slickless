@@ -168,10 +168,19 @@ export class Slickless {
     }
   }
 
-  private applyResponsive(): void {
+  /**
+   * Evaluate the responsive breakpoint list against the current viewport,
+   * re-merging `this.options` from the resolved settings. Always re-applies
+   * the merge — callers like `reInit()` reset `options` first and rely on
+   * this method to layer the active breakpoint back on top. Returns whether
+   * the active breakpoint changed; resize handlers use that to decide
+   * between a cheap re-layout and a full rebuild (dots, clones and arrows
+   * all depend on the post-breakpoint slidesToShow).
+   */
+  private applyResponsive(): boolean {
     const responsive = this.options.responsive;
-    if (!responsive || responsive.length === 0) return;
-    if (typeof window === "undefined") return;
+    if (!responsive || responsive.length === 0) return false;
+    if (typeof window === "undefined") return false;
     const width = window.innerWidth;
     const sorted: ResponsiveBreakpoint[] = [...responsive].sort(
       (a, b) => a.breakpoint - b.breakpoint,
@@ -184,19 +193,19 @@ export class Slickless {
       }
     }
     const newBp = active ? active.breakpoint : null;
-    if (newBp === this.currentBreakpoint) return;
+    const changed = newBp !== this.currentBreakpoint;
     this.currentBreakpoint = newBp;
-    if (active) {
-      if (active.settings === "unslick") {
-        this.destroy();
-        return;
-      }
-      this.options = mergeOptions(mergeOptions(DEFAULTS, this.userOptions), active.settings);
-    } else {
-      this.options = mergeOptions(DEFAULTS, this.userOptions);
+    if (active?.settings === "unslick") {
+      if (changed) this.destroy();
+      return changed;
     }
-    const detail: BreakpointDetail = { breakpoint: newBp };
-    this.emit("breakpoint", detail);
+    this.options = active
+      ? mergeOptions(mergeOptions(DEFAULTS, this.userOptions), active.settings)
+      : mergeOptions(DEFAULTS, this.userOptions);
+    if (changed) {
+      this.emit("breakpoint", { breakpoint: newBp });
+    }
+    return changed;
   }
 
   private build(): void {
@@ -706,7 +715,13 @@ export class Slickless {
     const width = this.root.getBoundingClientRect().width;
     if (width === this.lastRootWidth) return;
     this.lastRootWidth = width;
-    this.applyResponsive();
+    if (this.applyResponsive()) {
+      // Breakpoint changed — slidesToShow, infinite, dots, autoplay etc. may
+      // all be different now, so do a full rebuild. reInit preserves the
+      // current slide index and autoplay state.
+      if (!this.destroyed) this.reInit();
+      return;
+    }
     this.applyLayout();
   };
 
