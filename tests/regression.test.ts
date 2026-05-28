@@ -208,6 +208,32 @@ describe("regression: edge event fires consistently from arrow clicks at the bou
   });
 });
 
+describe("regression: manual navigation resets the autoplay timer", () => {
+  it("starts a fresh autoplay countdown after each user-driven goTo", async () => {
+    const root = track(makeRoot(4));
+    const s = new Slickless(root, {
+      autoplay: true,
+      autoplaySpeed: 100,
+      infinite: true,
+      speed: 0,
+      respectReducedMotion: false,
+    });
+    // After 60 ms the timer is more than half way to firing.
+    await new Promise((r) => setTimeout(r, 60));
+    expect(s.getCurrentSlide()).toBe(0);
+    // User-driven goTo: timer should reset, so 60 ms later (120 ms total
+    // since the carousel started) we're still on the requested slide.
+    s.goTo(2);
+    await new Promise((r) => setTimeout(r, 60));
+    expect(s.getCurrentSlide()).toBe(2);
+    // After enough additional time for one full autoplay interval to
+    // elapse, the autoplay tick fires from the post-reset baseline.
+    await new Promise((r) => setTimeout(r, 100));
+    expect(s.getCurrentSlide()).toBe(3);
+    s.destroy();
+  });
+});
+
 describe("regression: single-slide carousels hide dots and skip autoplay", () => {
   it("does not render dots when there is only one slide", () => {
     const root = track(makeRoot(1));

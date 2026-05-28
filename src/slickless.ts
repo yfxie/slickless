@@ -499,6 +499,15 @@ export class Slickless {
     // clever here.
     if (this.animating && !immediate) return;
 
+    // Manual navigation (arrow click, dot click, swipe, asNavFor sync,
+    // programmatic goTo) should restart the autoplay countdown so the
+    // automatic advance doesn't fire right on top of the user's action.
+    // Skipped when autoplay is currently paused (e.g. by hover/focus) —
+    // those pauses are released by their own handlers.
+    if (this.options.autoplay && !this.autoplayPaused) {
+      this.scheduleAutoplay();
+    }
+
     let target = index;
     const wrapEnabled = this.options.infinite && !this.options.fade;
 
