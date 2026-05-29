@@ -284,8 +284,11 @@ export class Slickless {
   private cloneSlide(original: HTMLElement): HTMLElement {
     const clone = original.cloneNode(true) as HTMLElement;
     clone.classList.add(CLASS.slideCloned);
-    clone.setAttribute("aria-hidden", "true");
-    clone.setAttribute("tabindex", "-1");
+    // `inert` removes the subtree from the a11y tree and makes every descendant
+    // unfocusable in one shot — so the cloned `<a>`/`<button>` inside can't be
+    // reached via tab, unlike a tabindex="-1" on the wrapper which only blocks
+    // the wrapper itself.
+    clone.setAttribute("inert", "");
     return clone;
   }
 
@@ -948,6 +951,30 @@ export class Slickless {
 
   private updateAria(): void {
     const trackIndex = this.realToTrackIndex(this.currentIndex);
+    const activeSlide = this.slides[trackIndex];
+
+    // Detect *before* mutating: is focus inside a slide that's about to be
+    // marked inert? Browsers move focus to the document body the moment we
+    // apply `inert` to its ancestor, which is functional but jarring. We'd
+    // rather re-park focus on the new active slide so keyboard users keep
+    // their place. The check has to happen before the attribute loop, because
+    // afterwards `document.activeElement` is already body.
+    let needsFocusMove = false;
+    if (typeof document !== "undefined" && activeSlide) {
+      const focused = document.activeElement;
+      if (focused && focused !== document.body) {
+        for (let i = 0; i < this.slides.length; i++) {
+          const slide = this.slides[i];
+          if (!slide) continue;
+          if (this.isSlideInActiveRange(i, trackIndex)) continue;
+          if (slide.contains(focused)) {
+            needsFocusMove = true;
+            break;
+          }
+        }
+      }
+    }
+
     for (let i = 0; i < this.slides.length; i++) {
       const slide = this.slides[i];
       if (!slide) continue;
@@ -956,10 +983,20 @@ export class Slickless {
       slide.classList.toggle(CLASS.slideActive, isActive);
       slide.classList.toggle(CLASS.slideCurrent, isCurrent);
       if (!slide.classList.contains(CLASS.slideCloned)) {
-        slide.setAttribute("aria-hidden", isActive ? "false" : "true");
-        slide.setAttribute("tabindex", isActive ? "0" : "-1");
+        if (isActive) {
+          slide.removeAttribute("inert");
+          slide.setAttribute("tabindex", "0");
+        } else {
+          slide.setAttribute("inert", "");
+          slide.removeAttribute("tabindex");
+        }
       }
     }
+
+    if (needsFocusMove && activeSlide) {
+      activeSlide.focus({ preventScroll: true });
+    }
+
     // Re-sync center class after settle so any state that diverged from the
     // in-flight target (e.g. a snap after an infinite wrap) is corrected.
     this.updateCenterMode(trackIndex);

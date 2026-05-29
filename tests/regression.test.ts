@@ -350,6 +350,62 @@ describe("regression: non-infinite slide carousels animate the track", () => {
   });
 });
 
+describe("regression: inactive slides use inert, not aria-hidden", () => {
+  // Chrome blocks `aria-hidden="true"` on an element that contains the focused
+  // descendant, so the slick-era pattern of `aria-hidden + tabindex=-1` is both
+  // a11y-broken (descendant <a>/<button> stay tab-focusable) and triggers a
+  // console warning whenever autoplay flips the active slide while focus is
+  // inside it. `inert` removes the subtree from the a11y tree, makes every
+  // descendant unfocusable, and moves focus out automatically — covering all
+  // three problems in one attribute.
+  it("marks inactive non-cloned slides with inert and the active one focusable", () => {
+    const root = track(makeRoot(4));
+    const s = new Slickless(root, { slidesToShow: 1, speed: 0 });
+    const slides = root.querySelectorAll<HTMLElement>(
+      ".slickless__slide:not(.slickless__slide--cloned)",
+    );
+    expect(slides[0]?.hasAttribute("inert")).toBe(false);
+    expect(slides[0]?.getAttribute("tabindex")).toBe("0");
+    for (let i = 1; i < slides.length; i++) {
+      expect(slides[i]?.hasAttribute("inert")).toBe(true);
+      expect(slides[i]?.hasAttribute("tabindex")).toBe(false);
+      // No lingering aria-hidden from the previous attribute scheme.
+      expect(slides[i]?.hasAttribute("aria-hidden")).toBe(false);
+    }
+    s.destroy();
+  });
+
+  it("marks cloned slides with inert so their <a>/<button> descendants are unreachable", () => {
+    const root = track(makeRoot(4));
+    const s = new Slickless(root, { slidesToShow: 1, infinite: true, speed: 0 });
+    const clones = root.querySelectorAll<HTMLElement>(".slickless__slide--cloned");
+    expect(clones.length).toBeGreaterThan(0);
+    for (const c of clones) {
+      expect(c.hasAttribute("inert")).toBe(true);
+    }
+    s.destroy();
+  });
+
+  it("moves focus to the new active slide before applying inert to the old one", () => {
+    const root = track(makeRoot(4));
+    const s = new Slickless(root, { slidesToShow: 1, speed: 0 });
+    const slides = root.querySelectorAll<HTMLElement>(
+      ".slickless__slide:not(.slickless__slide--cloned)",
+    );
+    const first = slides[0] as HTMLElement;
+    const second = slides[1] as HTMLElement;
+    // Put focus inside the active slide.
+    first.focus();
+    expect(document.activeElement).toBe(first);
+    s.goTo(1);
+    // Focus must NOT linger inside the now-inactive first slide — it should
+    // have been moved to the new active slide (the second one).
+    expect(first.contains(document.activeElement)).toBe(false);
+    expect(document.activeElement).toBe(second);
+    s.destroy();
+  });
+});
+
 describe("regression: fade does not position slides absolutely", () => {
   // Earlier versions used `position: absolute` on fade slides, which pulled
   // them out of normal flow — the track and viewport then collapsed to zero
