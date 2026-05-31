@@ -1,6 +1,6 @@
 {
   "name": "slickless",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A jQuery-free port of slick carousel — small, accessible, framework-agnostic.",
   "type": "module",
   "main": "./dist/slickless.umd.cjs",
