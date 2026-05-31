@@ -375,13 +375,22 @@ describe("regression: inactive slides use inert, not aria-hidden", () => {
     s.destroy();
   });
 
-  it("marks cloned slides with inert so their <a>/<button> descendants are unreachable", () => {
+  it("inerts inactive cloned slides and clears inert from any that go active", () => {
+    // Cloned slides can briefly become the visually active slide during an
+    // infinite wrap. While they're active their links/buttons must be
+    // interactive, so `inert` must follow active state — not be pinned on the
+    // wrapper. (Pinning it broke pointer events on the visible clone.)
     const root = track(makeRoot(4));
     const s = new Slickless(root, { slidesToShow: 1, infinite: true, speed: 0 });
     const clones = root.querySelectorAll<HTMLElement>(".slickless__slide--cloned");
     expect(clones.length).toBeGreaterThan(0);
     for (const c of clones) {
-      expect(c.hasAttribute("inert")).toBe(true);
+      const active = c.classList.contains("slickless__slide--active");
+      expect(c.hasAttribute("inert")).toBe(!active);
+      // Cloned wrappers never receive tabindex even when active — descendants
+      // already handle keyboard navigation, and a duplicate wrapper stop would
+      // confuse tab order.
+      expect(c.hasAttribute("tabindex")).toBe(false);
     }
     s.destroy();
   });

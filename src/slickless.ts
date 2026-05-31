@@ -284,11 +284,9 @@ export class Slickless {
   private cloneSlide(original: HTMLElement): HTMLElement {
     const clone = original.cloneNode(true) as HTMLElement;
     clone.classList.add(CLASS.slideCloned);
-    // `inert` removes the subtree from the a11y tree and makes every descendant
-    // unfocusable in one shot — so the cloned `<a>`/`<button>` inside can't be
-    // reached via tab, unlike a tabindex="-1" on the wrapper which only blocks
-    // the wrapper itself.
-    clone.setAttribute("inert", "");
+    // The clone's inert state is managed by updateAria(): clones briefly
+    // become the visually active slide during an infinite wrap, and pointer
+    // events / focus must work on them in that window.
     return clone;
   }
 
@@ -980,16 +978,18 @@ export class Slickless {
       if (!slide) continue;
       const isActive = this.isSlideInActiveRange(i, trackIndex);
       const isCurrent = i === trackIndex;
+      const isCloned = slide.classList.contains(CLASS.slideCloned);
       slide.classList.toggle(CLASS.slideActive, isActive);
       slide.classList.toggle(CLASS.slideCurrent, isCurrent);
-      if (!slide.classList.contains(CLASS.slideCloned)) {
-        if (isActive) {
-          slide.removeAttribute("inert");
-          slide.setAttribute("tabindex", "0");
-        } else {
-          slide.setAttribute("inert", "");
-          slide.removeAttribute("tabindex");
-        }
+      if (isActive) {
+        slide.removeAttribute("inert");
+        // Only real slides get a focusable wrapper. Cloned slides defer to
+        // their descendants (links, buttons) for tab order so the same logical
+        // slide isn't reachable through two wrappers in the same tab cycle.
+        if (!isCloned) slide.setAttribute("tabindex", "0");
+      } else {
+        slide.setAttribute("inert", "");
+        slide.removeAttribute("tabindex");
       }
     }
 
