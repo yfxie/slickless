@@ -280,6 +280,41 @@ describe("regression: all-fit carousels short-circuit dots/autoplay/clones", () 
     expect(trackEl.style.transform).toMatch(/^(?:translateX\(0(?:px)?\)|translate3d\(0(?:px)?,)/);
     s.destroy();
   });
+
+  it("toggles slide--current synchronously at goTo time, not after the animation", () => {
+    // CSS hooked off `.slickless__slide--current` (e.g. an underline bar on a
+    // focusOnSelect nav strip) should respond the instant navigation begins,
+    // so its transition runs in parallel with the source carousel. Earlier
+    // the class was only updated inside finish(), which delayed the visual
+    // cue by the source's full speed (or by the speed+50 fallback timeout
+    // for all-fit tracks where transitionend never fires).
+    const root = track(makeRoot(6));
+    const s = new Slickless(root, { slidesToShow: 1, speed: 300 });
+    expect(
+      root.querySelector(".slickless__slide--current")?.getAttribute("data-slick-index"),
+    ).toBe("0");
+    s.goTo(2);
+    expect(
+      root.querySelector(".slickless__slide--current")?.getAttribute("data-slick-index"),
+    ).toBe("2");
+    s.destroy();
+  });
+
+  it("keeps every slide non-inert after currentIndex moves in an all-fit carousel", () => {
+    // For an asNavFor nav strip with slideCount === slidesToShow, the
+    // active-range maths used to leave slides outside [current, current+show)
+    // marked inert, which silently blocked clicks on the items the user had
+    // already navigated past. All slides should remain interactive in
+    // all-fit carousels because they're all visible simultaneously.
+    const root = track(makeRoot(5));
+    const s = new Slickless(root, { slidesToShow: 5, focusOnSelect: true, speed: 0 });
+    s.goTo(2);
+    const slides = root.querySelectorAll<HTMLElement>(".slickless__slide");
+    for (const slide of slides) {
+      expect(slide.hasAttribute("inert")).toBe(false);
+    }
+    s.destroy();
+  });
 });
 
 describe("regression: single-slide carousels hide dots and skip autoplay", () => {

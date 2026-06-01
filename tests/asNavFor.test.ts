@@ -47,4 +47,36 @@ describe("asNavFor", () => {
     main.remove();
     nav.remove();
   });
+
+  it("notifies the linked carousel at the start of the change, not after", () => {
+    // Earlier versions hooked the sync onto `afterChange`, which meant the
+    // partner had to wait for the source's full animation before it could even
+    // begin to move — a noticeable lag when the nav and main had different
+    // `speed` values. The sync should fire synchronously the moment the source
+    // emits `beforeChange`, so both carousels animate in parallel.
+    const main = makeRoot("main3");
+    const nav = makeRoot("nav3");
+    const navInst = new Slickless(nav, { infinite: false, speed: 300 });
+    const mainInst = new Slickless(main, {
+      infinite: false,
+      speed: 600,
+      fade: true,
+      asNavFor: "#nav3",
+    });
+
+    let navBeforeChangeTarget = -1;
+    navInst.on<{ nextSlide: number }>("beforeChange", (d) => {
+      navBeforeChangeTarget = d.nextSlide;
+    });
+
+    // The whole `goTo` call must propagate the target to the nav synchronously,
+    // regardless of how long the source's animation runs for.
+    mainInst.goTo(2);
+    expect(navBeforeChangeTarget).toBe(2);
+
+    mainInst.destroy();
+    navInst.destroy();
+    main.remove();
+    nav.remove();
+  });
 });

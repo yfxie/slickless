@@ -563,6 +563,10 @@ export class Slickless {
       nextSlide: wrapEnabled ? mod(target, this.slideCount) : target,
     };
     this.emit("beforeChange", detail);
+    // Sync the linked carousel as soon as the change starts so both animate in
+    // parallel. Waiting until afterChange (the previous behaviour) stalled the
+    // partner by the source's full speed before it could even begin to move.
+    this.notifyLinked(detail.nextSlide);
 
     if (this.options.fade) {
       // Fade transitions via per-slide opacity — there's no track movement
@@ -572,7 +576,6 @@ export class Slickless {
       const after: AfterChangeDetail = { currentSlide: this.currentIndex };
       this.emit("afterChange", after);
       this.applyLazyLoad();
-      this.notifyLinked();
       return;
     }
 
@@ -594,6 +597,13 @@ export class Slickless {
     // And the dots: highlight the upcoming page as soon as navigation starts,
     // so the indicator tracks the slide instead of lagging behind it.
     this.updateDots(wrapEnabled ? mod(target, this.slideCount) : target);
+    // Same reasoning for the per-slide `--active`/`--current` classes — CSS
+    // hooked off them (e.g. an underline indicator on a focusOnSelect nav
+    // strip) should animate in lockstep with the source carousel instead of
+    // waiting for the track's own transition to finish. The full a11y state
+    // (inert/tabindex/focus) still updates in finish() because that's a
+    // settle-state concern, not a visual-feedback one.
+    this.updateSlideClasses(trackIndex);
 
     let finished = false;
     const finish = () => {
@@ -626,7 +636,6 @@ export class Slickless {
       const after: AfterChangeDetail = { currentSlide: this.currentIndex };
       this.emit("afterChange", after);
       this.applyLazyLoad();
-      this.notifyLinked();
     };
 
     if (immediate || this.effectiveSpeed() === 0) {
@@ -973,14 +982,12 @@ export class Slickless {
       }
     }
 
+    this.updateSlideClasses(trackIndex);
     for (let i = 0; i < this.slides.length; i++) {
       const slide = this.slides[i];
       if (!slide) continue;
       const isActive = this.isSlideInActiveRange(i, trackIndex);
-      const isCurrent = i === trackIndex;
       const isCloned = slide.classList.contains(CLASS.slideCloned);
-      slide.classList.toggle(CLASS.slideActive, isActive);
-      slide.classList.toggle(CLASS.slideCurrent, isCurrent);
       if (isActive) {
         slide.removeAttribute("inert");
         // Only real slides get a focusable wrapper. Cloned slides defer to
@@ -1000,6 +1007,18 @@ export class Slickless {
     // Re-sync center class after settle so any state that diverged from the
     // in-flight target (e.g. a snap after an infinite wrap) is corrected.
     this.updateCenterMode(trackIndex);
+  }
+
+  private updateSlideClasses(currentTrackIndex: number): void {
+    for (let i = 0; i < this.slides.length; i++) {
+      const slide = this.slides[i];
+      if (!slide) continue;
+      slide.classList.toggle(
+        CLASS.slideActive,
+        this.isSlideInActiveRange(i, currentTrackIndex),
+      );
+      slide.classList.toggle(CLASS.slideCurrent, i === currentTrackIndex);
+    }
   }
 
   private suppressSlideTransitionsForOneFrame(): void {
@@ -1027,6 +1046,13 @@ export class Slickless {
   }
 
   private isSlideInActiveRange(slideIdxInTrack: number, currentTrackIndex: number): boolean {
+    // All-fit carousels show every slide at once, so the "active window"
+    // concept doesn't apply — every slide is visible and must stay
+    // interactive. Without this, moving currentIndex would mark the
+    // already-visible slides outside the [current, current+slidesToShow)
+    // range as inert and they'd silently stop accepting clicks (e.g. a
+    // focusOnSelect nav strip after picking a non-first item).
+    if (this.allSlidesFit()) return true;
     const show = Math.max(1, this.options.slidesToShow);
     if (this.options.centerMode) {
       const half = Math.floor(show / 2);
@@ -1153,20 +1179,23 @@ export class Slickless {
     const instance = (el as HTMLElement & { __slickless?: Slickless }).__slickless;
     if (instance) {
       this.linkedNav = instance;
-      instance.on<AfterChangeDetail>("afterChange", (detail) => {
+      // Subscribe to `beforeChange` so we react the moment the nav starts
+      // moving instead of waiting for its animation to finish — that's what
+      // lets both carousels animate in parallel.
+      instance.on<BeforeChangeDetail>("beforeChange", (detail) => {
         if (this.linkedFromExternal) return;
         this.linkedFromExternal = true;
-        this.goTo(detail.currentSlide);
+        this.goTo(detail.nextSlide);
         this.linkedFromExternal = false;
       });
     }
   }
 
-  private notifyLinked(): void {
+  private notifyLinked(targetIndex: number): void {
     if (!this.linkedNav) return;
     if (this.linkedFromExternal) return;
     this.linkedFromExternal = true;
-    this.linkedNav.goTo(this.currentIndex);
+    this.linkedNav.goTo(targetIndex);
     this.linkedFromExternal = false;
   }
 
