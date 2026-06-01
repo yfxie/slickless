@@ -6,6 +6,7 @@ slick carousel 拿掉 jQuery 的重寫版。選項名稱不變，零執行期依
 
 [![npm](https://img.shields.io/npm/v/slickless.svg)](https://www.npmjs.com/package/slickless)
 [![bundle](https://img.shields.io/bundlephobia/minzip/slickless)](https://bundlephobia.com/package/slickless)
+[![coverage](https://img.shields.io/codecov/c/github/yfxie/slickless)](https://codecov.io/gh/yfxie/slickless)
 [![license](https://img.shields.io/npm/l/slickless.svg)](./LICENSE)
 
 [線上範例、選項、API、樣式技巧 →](https://yfxie.github.io/slickless/)

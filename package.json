@@ -25,6 +25,7 @@
     "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
     "build:demo": "vite build --config vite.demo.config.ts",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run build"
   },
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "happy-dom": "^20.9.0",
     "typescript": "^5.7.2",
     "vite": "^8.0.14",

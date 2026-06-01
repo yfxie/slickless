@@ -6,6 +6,7 @@ A jQuery-free rewrite of slick. Same option names, no runtime dependencies, ~8 K
 
 [![npm](https://img.shields.io/npm/v/slickless.svg)](https://www.npmjs.com/package/slickless)
 [![bundle](https://img.shields.io/bundlephobia/minzip/slickless)](https://bundlephobia.com/package/slickless)
+[![coverage](https://img.shields.io/codecov/c/github/yfxie/slickless)](https://codecov.io/gh/yfxie/slickless)
 [![license](https://img.shields.io/npm/l/slickless.svg)](./LICENSE)
 
 [Live demo, options, API, recipes →](https://yfxie.github.io/slickless/)
