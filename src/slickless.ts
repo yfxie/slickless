@@ -99,6 +99,12 @@ export class Slickless {
   private init(): void {
     this.captureChildren();
     this.applyResponsive();
+    // A breakpoint resolving to "unslick" at construction time destroys the
+    // instance from inside applyResponsive(). Bail out before build() so we
+    // leave the element as plain markup instead of half-wrapping it and then
+    // flagging it destroyed. (The resize path already guards this via
+    // handleResize; construction needs the same check.)
+    if (this.destroyed) return;
     this.build();
     this.bindEvents();
     this.goTo(this.options.initialSlide, true);
@@ -155,6 +161,12 @@ export class Slickless {
     for (const child of this.originalChildren) this.root.appendChild(child);
     this.options = mergeOptions(DEFAULTS, this.userOptions);
     this.applyResponsive();
+    // Same guard as init(): if the active breakpoint resolved to "unslick",
+    // applyResponsive() already destroyed us — don't rebuild over the top.
+    // Note: applyResponsive() only destroys when the active breakpoint actually
+    // changed, so mutating an already-active breakpoint's settings from
+    // non-unslick to "unslick" won't tear down here. That edge is out of scope.
+    if (this.destroyed) return;
     this.build();
     this.bindEvents();
     this.goTo(clamp(wasIndex, 0, this.slideCount - 1), true);

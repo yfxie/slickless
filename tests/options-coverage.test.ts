@@ -82,6 +82,56 @@ describe("responsive unslick", () => {
     // Original children are returned to the root.
     expect(root.children.length).toBe(5);
   });
+
+  it("leaves the element as plain markup when 'unslick' is active at construction", () => {
+    // Viewport is already below the breakpoint at construction time, so the
+    // carousel must never be built — the element should stay as-is rather than
+    // being half-wrapped and flagged destroyed.
+    setViewport(500);
+    const root = makeRoot(5);
+    const s = new Slickless(root, {
+      slidesToShow: 1,
+      speed: 0,
+      responsive: [{ breakpoint: 768, settings: "unslick" }],
+    });
+
+    expect(root.classList.contains("slickless")).toBe(false);
+    expect(root.classList.contains("slickless--initialized")).toBe(false);
+    expect(root.querySelector(".slickless__track")).toBeNull();
+    expect(root.querySelector(".slickless__arrow")).toBeNull();
+    // The original five children are untouched, not swallowed into a viewport.
+    expect(root.children.length).toBe(5);
+    expect(Array.from(root.children).map((c) => c.textContent)).toEqual([
+      "S0",
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+    ]);
+    void s;
+  });
+
+  it("tears down cleanly when a reInit crosses into an 'unslick' breakpoint", () => {
+    // Start wide: carousel is live.
+    setViewport(1200);
+    const root = makeRoot(5);
+    const s = new Slickless(root, {
+      slidesToShow: 1,
+      speed: 0,
+      responsive: [{ breakpoint: 768, settings: "unslick" }],
+    });
+    expect(root.classList.contains("slickless--initialized")).toBe(true);
+
+    // Viewport drops into the unslick zone, then a programmatic reInit runs
+    // (e.g. via setOptions) before any resize event was processed. reInit must
+    // honour the destroy and not rebuild a half-wrapped carousel.
+    setViewport(500);
+    s.setOptions({ slidesToShow: 2 });
+
+    expect(root.classList.contains("slickless")).toBe(false);
+    expect(root.querySelector(".slickless__track")).toBeNull();
+    expect(root.children.length).toBe(5);
+  });
 });
 
 describe("custom arrows", () => {
