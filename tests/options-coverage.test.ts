@@ -429,4 +429,53 @@ describe("active range — partial slides", () => {
     expect(active).toBe(2);
     s.destroy();
   });
+
+  it("computes the variableWidth active range in linear time, not O(n²)", () => {
+    // Count the slide/viewport measurements during a single navigation for n
+    // and 2n slides. Linear work roughly doubles; the old per-slide overlap
+    // test (which re-summed every slide's width for every slide) quadrupled.
+    const measure = (count: number): number => {
+      let calls = 0;
+      const orig = Element.prototype.getBoundingClientRect;
+      const sizing = (w: number) =>
+        ({
+          x: 0,
+          y: 0,
+          width: w,
+          height: 400,
+          top: 0,
+          left: 0,
+          right: w,
+          bottom: 400,
+          toJSON: () => ({}),
+        }) as DOMRect;
+      Element.prototype.getBoundingClientRect = function () {
+        const el = this as HTMLElement;
+        if (el.classList?.contains("slickless__viewport")) {
+          calls++;
+          return sizing(800);
+        }
+        if (el.classList?.contains("slickless__slide")) {
+          calls++;
+          return sizing(100);
+        }
+        return orig.call(this);
+      };
+      try {
+        const root = makeRoot(count);
+        const s = new Slickless(root, { variableWidth: true, infinite: false, speed: 0 });
+        calls = 0; // ignore construction; measure one navigation
+        s.goTo(Math.floor(count / 2), true);
+        s.destroy();
+        return calls;
+      } finally {
+        Element.prototype.getBoundingClientRect = orig;
+      }
+    };
+    const small = measure(20);
+    const large = measure(40);
+    // Linear ⇒ ratio ≈ 2; quadratic ⇒ ratio ≈ 4. Allow generous slack but stay
+    // clearly below the quadratic regime.
+    expect(large).toBeLessThan(small * 3);
+  });
 });

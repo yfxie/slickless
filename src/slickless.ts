@@ -988,6 +988,7 @@ export class Slickless {
   private updateAria(): void {
     const trackIndex = this.realToTrackIndex(this.currentIndex);
     const activeSlide = this.slides[trackIndex];
+    const { lo, hi } = this.activeTrackRange(trackIndex);
 
     // Detect *before* mutating: is focus inside a slide that's about to be
     // marked inert? Browsers move focus to the document body the moment we
@@ -1002,7 +1003,7 @@ export class Slickless {
         for (let i = 0; i < this.slides.length; i++) {
           const slide = this.slides[i];
           if (!slide) continue;
-          if (this.isSlideInActiveRange(i, trackIndex)) continue;
+          if (i >= lo && i <= hi) continue;
           if (slide.contains(focused)) {
             needsFocusMove = true;
             break;
@@ -1015,7 +1016,7 @@ export class Slickless {
     for (let i = 0; i < this.slides.length; i++) {
       const slide = this.slides[i];
       if (!slide) continue;
-      const isActive = this.isSlideInActiveRange(i, trackIndex);
+      const isActive = i >= lo && i <= hi;
       const isCloned = slide.classList.contains(CLASS.slideCloned);
       if (isActive) {
         slide.removeAttribute("inert");
@@ -1039,13 +1040,11 @@ export class Slickless {
   }
 
   private updateSlideClasses(currentTrackIndex: number): void {
+    const { lo, hi } = this.activeTrackRange(currentTrackIndex);
     for (let i = 0; i < this.slides.length; i++) {
       const slide = this.slides[i];
       if (!slide) continue;
-      slide.classList.toggle(
-        CLASS.slideActive,
-        this.isSlideInActiveRange(i, currentTrackIndex),
-      );
+      slide.classList.toggle(CLASS.slideActive, i >= lo && i <= hi);
       slide.classList.toggle(CLASS.slideCurrent, i === currentTrackIndex);
     }
   }
@@ -1074,61 +1073,70 @@ export class Slickless {
     }
   }
 
-  private isSlideInActiveRange(slideIdxInTrack: number, currentTrackIndex: number): boolean {
+  // Inclusive [lo, hi] track-index range of slides that count as active. The
+  // active set is always contiguous (slides lay out left-to-right and the
+  // viewport is one continuous window), so callers compute this range ONCE per
+  // pass and do O(1) membership checks — instead of an O(n) overlap test per
+  // slide, which made class/aria updates O(n²) for variableWidth. An empty
+  // result is { lo: 0, hi: -1 } (no index satisfies lo <= i <= hi).
+  private activeTrackRange(currentTrackIndex: number): { lo: number; hi: number } {
     // All-fit carousels show every slide at once, so the "active window"
-    // concept doesn't apply — every slide is visible and must stay
-    // interactive. Without this, moving currentIndex would mark the
-    // already-visible slides outside the [current, current+slidesToShow)
-    // range as inert and they'd silently stop accepting clicks (e.g. a
-    // focusOnSelect nav strip after picking a non-first item).
-    if (this.allSlidesFit()) return true;
+    // concept doesn't apply — every slide is visible and must stay interactive.
+    // Without this, moving currentIndex would mark the already-visible slides
+    // outside the [current, current+slidesToShow) range as inert and they'd
+    // silently stop accepting clicks (e.g. a focusOnSelect nav strip after
+    // picking a non-first item).
+    if (this.allSlidesFit()) return { lo: 0, hi: this.slides.length - 1 };
     // variableWidth and centerMode render partial slides (uneven widths, or
     // centerPadding letting neighbours peek through) that a fixed slidesToShow
     // window simply can't describe. Fall back to a real geometric overlap test:
     // any slide showing even a sliver counts as active. fade is excluded — it
     // stacks slides and never translates, so the window model still holds.
     if ((this.options.variableWidth || this.options.centerMode) && !this.options.fade) {
-      return this.slideOverlapsViewport(slideIdxInTrack, currentTrackIndex);
+      return this.overlappingTrackRange(currentTrackIndex);
     }
     const show = Math.max(1, this.options.slidesToShow);
     if (this.options.centerMode) {
       const half = Math.floor(show / 2);
-      return (
-        slideIdxInTrack >= currentTrackIndex - half &&
-        slideIdxInTrack < currentTrackIndex + show - half
-      );
+      return { lo: currentTrackIndex - half, hi: currentTrackIndex + show - half - 1 };
     }
-    return (
-      slideIdxInTrack >= currentTrackIndex && slideIdxInTrack < currentTrackIndex + show
-    );
+    return { lo: currentTrackIndex, hi: currentTrackIndex + show - 1 };
   }
 
-  // True when slide `j` (a track index) shows any part of itself inside the
+  // The contiguous range of slides that show any part of themselves inside the
   // viewport once the track settles at `currentTrackIndex`. Positions are
   // computed analytically from the resting offset and per-slide sizes — never
   // from a live getBoundingClientRect position — so this is correct even when
   // called at the *start* of an animation, before the track has moved. (Widths
-  // don't change mid-translate, so reading them from the DOM is safe.)
-  private slideOverlapsViewport(j: number, currentTrackIndex: number): boolean {
+  // don't change mid-translate, so reading them from the DOM is safe.) All
+  // measurements happen here, before any caller writes classes/attributes, so
+  // reads and writes don't interleave into layout thrash.
+  private overlappingTrackRange(currentTrackIndex: number): { lo: number; hi: number } {
     const vertical = this.options.vertical;
     const vp = this.viewportSize();
     const targetOffset = this.indexToOffset(currentTrackIndex);
     // Fixed-width modes (centerMode without variableWidth) share one slide size;
     // compute it once instead of re-measuring the viewport per slide.
     const fixedSize = this.options.variableWidth ? null : this.slideSize();
-    const sizeOf = (idx: number): number => {
-      if (fixedSize !== null) return fixedSize;
-      const el = this.slides[idx];
-      if (!el) return 0;
-      const r = el.getBoundingClientRect();
-      return vertical ? r.height : r.width;
-    };
+    let lo = 0;
+    let hi = -1;
     let rawLeft = 0;
-    for (let k = 0; k < j; k++) rawLeft += sizeOf(k);
-    const onScreenLeft = rawLeft - targetOffset;
-    // Strict overlap with [0, vp): "any part visible" — a slide exactly flush
-    // against either edge (zero overlap) is not active.
-    return onScreenLeft < vp && onScreenLeft + sizeOf(j) > 0;
+    for (let k = 0; k < this.slides.length; k++) {
+      let size = fixedSize ?? 0;
+      if (fixedSize === null) {
+        const r = this.slides[k]?.getBoundingClientRect();
+        size = r ? (vertical ? r.height : r.width) : 0;
+      }
+      const onScreenLeft = rawLeft - targetOffset;
+      // Strict overlap with [0, vp): "any part visible" — a slide exactly flush
+      // against either edge (zero overlap) is not active.
+      if (onScreenLeft < vp && onScreenLeft + size > 0) {
+        if (hi === -1) lo = k;
+        hi = k;
+      }
+      rawLeft += size;
+    }
+    return { lo, hi };
   }
 
   private updateArrows(): void {
