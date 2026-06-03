@@ -262,3 +262,101 @@ describe("pointer drag", () => {
     s.destroy();
   });
 });
+
+describe("no-op navigation", () => {
+  it("does not emit change events on a plain click (no drag)", () => {
+    const root = makeRoot(5);
+    const s = new Slickless(root, { infinite: false, draggable: true, speed: 0 });
+    const viewport = root.querySelector(".slickless__viewport") as HTMLElement;
+    let before = 0;
+    let after = 0;
+    s.on("beforeChange", () => before++);
+    s.on("afterChange", () => after++);
+
+    // A plain click is pointerdown + pointerup at the same spot with no move.
+    // It must not register as a slide change.
+    pointer("pointerdown", viewport, 300, 100);
+    pointer("pointerup", window, 300, 100);
+
+    expect(before).toBe(0);
+    expect(after).toBe(0);
+    expect(s.getCurrentSlide()).toBe(0);
+    s.destroy();
+  });
+
+  it("snaps the track back to rest without emitting change events for a sub-threshold drag", () => {
+    const root = makeRoot(5);
+    const s = new Slickless(root, {
+      infinite: false,
+      draggable: true,
+      swipeThreshold: 100,
+      speed: 0,
+    });
+    const viewport = root.querySelector(".slickless__viewport") as HTMLElement;
+    const track = root.querySelector(".slickless__track") as HTMLElement;
+    let before = 0;
+    s.on("beforeChange", () => before++);
+    const restTransform = track.style.transform;
+
+    const origNow = performance.now;
+    let clock = 0;
+    (performance as { now: () => number }).now = () => clock;
+    try {
+      pointer("pointerdown", viewport, 300, 100);
+      pointer("pointermove", window, 280, 100); // 20px drag moves the track
+      clock = 1000; // low velocity → not a swipe
+      pointer("pointerup", window, 280, 100);
+    } finally {
+      (performance as { now: () => number }).now = origNow;
+    }
+
+    expect(before).toBe(0); // no spurious navigation event
+    expect(s.getCurrentSlide()).toBe(0);
+    // The dragged track must still return to its resting offset — the fix must
+    // reset the transform, not just skip the event.
+    expect(track.style.transform).toBe(restTransform);
+    s.destroy();
+  });
+
+  it("fires edge but no change events when advancing past the last finite slide", () => {
+    const root = makeRoot(5);
+    const s = new Slickless(root, { infinite: false, speed: 0 });
+    s.goTo(4); // park on the last slide before attaching listeners
+    let edge = 0;
+    let before = 0;
+    let after = 0;
+    s.on("edge", () => edge++);
+    s.on("beforeChange", () => before++);
+    s.on("afterChange", () => after++);
+
+    // Already at the end — next() clamps back to the same index, so it should
+    // report the edge but not a slide change.
+    s.next();
+
+    expect(edge).toBe(1);
+    expect(before).toBe(0);
+    expect(after).toBe(0);
+    expect(s.getCurrentSlide()).toBe(4);
+    s.destroy();
+  });
+
+  it("does not emit change events when focusOnSelect re-clicks the active slide", () => {
+    const root = makeRoot(5);
+    const s = new Slickless(root, { focusOnSelect: true, infinite: false, speed: 0 });
+    const slides = root.querySelectorAll<HTMLElement>(
+      ".slickless__slide:not(.slickless__slide--cloned)",
+    );
+    let before = 0;
+    let after = 0;
+    s.on("beforeChange", () => before++);
+    s.on("afterChange", () => after++);
+
+    // Slide 0 is already the active slide; clicking it changes nothing.
+    slides[0]?.click();
+
+    expect(before).toBe(0);
+    expect(after).toBe(0);
+    expect(s.getCurrentSlide()).toBe(0);
+    s.destroy();
+  });
+});

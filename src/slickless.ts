@@ -574,6 +574,14 @@ export class Slickless {
       currentSlide: previous,
       nextSlide: wrapEnabled ? mod(target, this.slideCount) : target,
     };
+    // A no-op navigation — the target is already the current slide — shouldn't
+    // fire change events, restart the transition, or re-sync the linked
+    // carousel. This is what stops a plain click (focusOnSelect re-selecting the
+    // active slide, or a programmatic goTo to the current index) from emitting a
+    // spurious beforeChange/afterChange pair. `immediate` calls are exempt:
+    // init / reInit re-layout must run even when the index is unchanged. Any
+    // `edge` event for finite boundaries has already been emitted above.
+    if (!immediate && detail.nextSlide === previous) return;
     this.emit("beforeChange", detail);
     // Sync the linked carousel as soon as the change starts so both animate in
     // parallel. Waiting until afterChange (the previous behaviour) stalled the
@@ -905,9 +913,11 @@ export class Slickless {
           this.next();
         }
       } else if (followsFinger()) {
-        // Snap the track back to the resting position. Fade mode never
-        // moved the track so there's nothing to snap.
-        this.goTo(this.currentIndex, true);
+        // Snap the track back to the resting position. This is a visual reset,
+        // not a navigation — routing it through goTo would emit a spurious
+        // beforeChange/afterChange pair for a slide that never changed. Fade
+        // mode never moved the track so there's nothing to snap.
+        this.snapToRest();
       }
     };
 
@@ -915,7 +925,7 @@ export class Slickless {
       if (!this.pointer || this.pointer.id !== e.pointerId) return;
       this.root.classList.remove(CLASS.dragging);
       this.pointer = null;
-      if (followsFinger()) this.goTo(this.currentIndex, true);
+      if (followsFinger()) this.snapToRest();
     };
 
     const downHandler = onDown as (e: Event) => void;
@@ -942,6 +952,13 @@ export class Slickless {
     if (up) window.removeEventListener("pointerup", up);
     if (cancel) window.removeEventListener("pointercancel", cancel);
     this.pointerHandlers = {};
+  }
+
+  // Reset the track to the current slide's resting offset with no animation and
+  // no events — used when a drag ends below the swipe threshold. Distinct from
+  // goTo, which is for navigation and emits change events.
+  private snapToRest(): void {
+    this.translateTo(this.indexToOffset(this.realToTrackIndex(this.currentIndex)), false);
   }
 
   private parseTranslate(): number {
