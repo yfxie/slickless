@@ -344,3 +344,89 @@ describe("respectReducedMotion", () => {
     }
   });
 });
+
+describe("active range — partial slides", () => {
+  // Give the viewport and slides real dimensions so the geometric overlap test
+  // has something to measure (happy-dom lays nothing out on its own).
+  function withSizes(viewport: number, slide: number, fn: () => void): void {
+    const sizing = (w: number) =>
+      ({
+        x: 0,
+        y: 0,
+        width: w,
+        height: 400,
+        top: 0,
+        left: 0,
+        right: w,
+        bottom: 400,
+        toJSON: () => ({}),
+      }) as DOMRect;
+    const orig = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function () {
+      const el = this as HTMLElement;
+      if (el.classList?.contains("slickless__viewport")) return sizing(viewport);
+      if (el.classList?.contains("slickless__slide")) return sizing(slide);
+      return orig.call(this);
+    };
+    try {
+      fn();
+    } finally {
+      Element.prototype.getBoundingClientRect = orig;
+    }
+  }
+
+  it("marks every partially-visible slide active in variableWidth mode", () => {
+    withSizes(800, 200, () => {
+      const root = makeRoot(6);
+      const s = new Slickless(root, { variableWidth: true, infinite: false, speed: 0 });
+      // 200px slides in an 800px viewport → slides 0..3 are (fully or partly)
+      // visible. The old slidesToShow=1 window marked only slide 0.
+      const active = root.querySelectorAll(".slickless__slide--active").length;
+      expect(active).toBe(4);
+      s.destroy();
+    });
+  });
+
+  it("marks peeking neighbours active in centerMode", () => {
+    const root = makeRoot(6);
+    const s = new Slickless(root, {
+      centerMode: true,
+      centerPadding: "40px",
+      slidesToShow: 1,
+      infinite: false,
+      speed: 0,
+    });
+    s.goTo(2);
+    const slides = root.querySelectorAll<HTMLElement>(
+      ".slickless__slide:not(.slickless__slide--cloned)",
+    );
+    // centerPadding makes slides 1 and 3 peek in beside the centered slide 2;
+    // slide 0 is fully off-screen.
+    expect(slides[1]?.classList.contains("slickless__slide--active")).toBe(true);
+    expect(slides[2]?.classList.contains("slickless__slide--active")).toBe(true);
+    expect(slides[3]?.classList.contains("slickless__slide--active")).toBe(true);
+    expect(slides[0]?.classList.contains("slickless__slide--active")).toBe(false);
+    s.destroy();
+  });
+
+  it("keeps partially-visible variableWidth slides interactive (not inert)", () => {
+    withSizes(800, 200, () => {
+      const root = makeRoot(6);
+      const s = new Slickless(root, { variableWidth: true, infinite: false, speed: 0 });
+      const slides = root.querySelectorAll<HTMLElement>(".slickless__slide");
+      // a11y follows the same definition: a visible slide stays focusable, an
+      // off-screen one is inert.
+      expect(slides[2]?.hasAttribute("inert")).toBe(false);
+      expect(slides[5]?.hasAttribute("inert")).toBe(true);
+      s.destroy();
+    });
+  });
+
+  it("still uses the slidesToShow window for plain fixed-width carousels", () => {
+    const root = makeRoot(6);
+    const s = new Slickless(root, { slidesToShow: 2, infinite: false, speed: 0 });
+    const active = root.querySelectorAll(".slickless__slide--active").length;
+    expect(active).toBe(2);
+    s.destroy();
+  });
+});

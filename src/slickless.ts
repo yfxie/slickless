@@ -1082,6 +1082,14 @@ export class Slickless {
     // range as inert and they'd silently stop accepting clicks (e.g. a
     // focusOnSelect nav strip after picking a non-first item).
     if (this.allSlidesFit()) return true;
+    // variableWidth and centerMode render partial slides (uneven widths, or
+    // centerPadding letting neighbours peek through) that a fixed slidesToShow
+    // window simply can't describe. Fall back to a real geometric overlap test:
+    // any slide showing even a sliver counts as active. fade is excluded — it
+    // stacks slides and never translates, so the window model still holds.
+    if ((this.options.variableWidth || this.options.centerMode) && !this.options.fade) {
+      return this.slideOverlapsViewport(slideIdxInTrack, currentTrackIndex);
+    }
     const show = Math.max(1, this.options.slidesToShow);
     if (this.options.centerMode) {
       const half = Math.floor(show / 2);
@@ -1093,6 +1101,34 @@ export class Slickless {
     return (
       slideIdxInTrack >= currentTrackIndex && slideIdxInTrack < currentTrackIndex + show
     );
+  }
+
+  // True when slide `j` (a track index) shows any part of itself inside the
+  // viewport once the track settles at `currentTrackIndex`. Positions are
+  // computed analytically from the resting offset and per-slide sizes — never
+  // from a live getBoundingClientRect position — so this is correct even when
+  // called at the *start* of an animation, before the track has moved. (Widths
+  // don't change mid-translate, so reading them from the DOM is safe.)
+  private slideOverlapsViewport(j: number, currentTrackIndex: number): boolean {
+    const vertical = this.options.vertical;
+    const vp = this.viewportSize();
+    const targetOffset = this.indexToOffset(currentTrackIndex);
+    // Fixed-width modes (centerMode without variableWidth) share one slide size;
+    // compute it once instead of re-measuring the viewport per slide.
+    const fixedSize = this.options.variableWidth ? null : this.slideSize();
+    const sizeOf = (idx: number): number => {
+      if (fixedSize !== null) return fixedSize;
+      const el = this.slides[idx];
+      if (!el) return 0;
+      const r = el.getBoundingClientRect();
+      return vertical ? r.height : r.width;
+    };
+    let rawLeft = 0;
+    for (let k = 0; k < j; k++) rawLeft += sizeOf(k);
+    const onScreenLeft = rawLeft - targetOffset;
+    // Strict overlap with [0, vp): "any part visible" — a slide exactly flush
+    // against either edge (zero overlap) is not active.
+    return onScreenLeft < vp && onScreenLeft + sizeOf(j) > 0;
   }
 
   private updateArrows(): void {
