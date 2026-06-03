@@ -581,7 +581,14 @@ export class Slickless {
     // spurious beforeChange/afterChange pair. `immediate` calls are exempt:
     // init / reInit re-layout must run even when the index is unchanged. Any
     // `edge` event for finite boundaries has already been emitted above.
-    if (!immediate && detail.nextSlide === previous) return;
+    if (!immediate && detail.nextSlide === previous) {
+      // The track may be displaced even though the index didn't change — e.g. an
+      // over-threshold swipe past the first/last slide resolves to the current
+      // index here. Glide it back to rest (event-free). fade never moves the
+      // track, so there's nothing to reset.
+      if (!this.options.fade) this.snapToRest(true);
+      return;
+    }
     this.emit("beforeChange", detail);
     // Sync the linked carousel as soon as the change starts so both animate in
     // parallel. Waiting until afterChange (the previous behaviour) stalled the
@@ -954,11 +961,14 @@ export class Slickless {
     this.pointerHandlers = {};
   }
 
-  // Reset the track to the current slide's resting offset with no animation and
-  // no events — used when a drag ends below the swipe threshold. Distinct from
-  // goTo, which is for navigation and emits change events.
-  private snapToRest(): void {
-    this.translateTo(this.indexToOffset(this.realToTrackIndex(this.currentIndex)), false);
+  // Reset the track to the current slide's resting offset with no events —
+  // used when a drag resolves to no navigation (ended below the swipe
+  // threshold, or an over-threshold drag past the first/last slide). Distinct
+  // from goTo, which is for navigation and emits change events. `animate`
+  // matches the gesture: an instant snap for a released sub-threshold drag, a
+  // glide for a blocked boundary swipe (mirroring how a real navigation moves).
+  private snapToRest(animate = false): void {
+    this.translateTo(this.indexToOffset(this.realToTrackIndex(this.currentIndex)), animate);
   }
 
   private parseTranslate(): number {

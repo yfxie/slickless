@@ -284,6 +284,77 @@ describe("no-op navigation", () => {
     s.destroy();
   });
 
+  it("snaps the track home when an over-threshold drag is blocked at the first slide", async () => {
+    const root = makeRoot(5);
+    const s = new Slickless(root, {
+      infinite: false,
+      draggable: true,
+      swipeThreshold: 30,
+      speed: 0,
+    });
+    const viewport = root.querySelector(".slickless__viewport") as HTMLElement;
+    const track = root.querySelector(".slickless__track") as HTMLElement;
+    const rest = track.style.transform;
+    let before = 0;
+    let after = 0;
+    let edge = 0;
+    s.on("beforeChange", () => before++);
+    s.on("afterChange", () => after++);
+    s.on("edge", () => edge++);
+
+    // Drag forward (toward prev) at the first slide. There's nothing before it,
+    // so navigation is blocked — but the finger-dragged track must still return
+    // to rest instead of staying stuck mid-drag.
+    pointer("pointerdown", viewport, 100, 100);
+    pointer("pointermove", window, 170, 100);
+    pointer("pointermove", window, 220, 100); // 120px → over threshold → swipe
+    pointer("pointerup", window, 220, 100);
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(s.getCurrentSlide()).toBe(0);
+    expect(track.style.transform).toBe(rest);
+    // A blocked boundary swipe is a no-op navigation: it reports the edge but
+    // must not emit change events.
+    expect(edge).toBe(1);
+    expect(before).toBe(0);
+    expect(after).toBe(0);
+    s.destroy();
+  });
+
+  it("snaps the track home when an over-threshold drag is blocked at the last slide", async () => {
+    const root = makeRoot(5);
+    const s = new Slickless(root, {
+      infinite: false,
+      draggable: true,
+      swipeThreshold: 30,
+      speed: 0,
+    });
+    s.goTo(4);
+    const viewport = root.querySelector(".slickless__viewport") as HTMLElement;
+    const track = root.querySelector(".slickless__track") as HTMLElement;
+    const rest = track.style.transform;
+    let before = 0;
+    let after = 0;
+    let edge = 0;
+    s.on("beforeChange", () => before++);
+    s.on("afterChange", () => after++);
+    s.on("edge", () => edge++);
+
+    // Drag backward (toward next) at the last slide — blocked, but must snap back.
+    pointer("pointerdown", viewport, 220, 100);
+    pointer("pointermove", window, 150, 100);
+    pointer("pointermove", window, 100, 100);
+    pointer("pointerup", window, 100, 100);
+    await new Promise((r) => setTimeout(r, 10));
+
+    expect(s.getCurrentSlide()).toBe(4);
+    expect(track.style.transform).toBe(rest);
+    expect(edge).toBe(1);
+    expect(before).toBe(0);
+    expect(after).toBe(0);
+    s.destroy();
+  });
+
   it("snaps the track back to rest without emitting change events for a sub-threshold drag", () => {
     const root = makeRoot(5);
     const s = new Slickless(root, {
